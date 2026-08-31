@@ -72,7 +72,10 @@ api.interceptors.request.use(
 
     const isPassengerRoute =
       url.startsWith("/passengers") ||
-      url.startsWith("/refunds") ||
+      /* A refund is the traveller's own action, except the ledger under
+         /refunds/admin, which is a Super Admin view and must carry the admin
+         token — same split as the booking routes below. */
+      (url.startsWith("/refunds") && !url.startsWith("/refunds/admin")) ||
       /* Notifications belong to the passenger who received them. /key is the
          VAPID public key and needs no token at all, but sending one does no
          harm and keeps this rule simple. */
