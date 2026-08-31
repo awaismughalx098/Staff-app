@@ -30,7 +30,7 @@ function AuthField({
   return (
     <div className="w-full">
       <div
-        className={`flex h-[52px] w-full items-center gap-3 rounded-input border bg-surface px-4 transition-colors duration-200 focus-within:border-accent ${
+        className={`field-halo flex h-[52px] w-full items-center gap-3 rounded-input border bg-surface px-4 transition-all duration-200 ${
           error ? "border-danger" : "border-line"
         }`}
       >

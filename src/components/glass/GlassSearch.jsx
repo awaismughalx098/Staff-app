@@ -5,7 +5,7 @@ import { Search, X } from "lucide-react";
 function GlassSearch({ value, onChange, placeholder = "Search...", className = "", ...props }) {
   return (
     <div
-      className={`glass-surface flex h-[52px] items-center gap-3 rounded-input px-4 transition-colors duration-300 ease-in-out focus-within:border-accent-line ${className}`}
+      className={`glass-surface field-halo flex h-[52px] items-center gap-3 rounded-input px-4 transition-all duration-300 ease-in-out ${className}`}
     >
       <Search className="h-4 w-4 shrink-0 text-content-muted" />
       <input

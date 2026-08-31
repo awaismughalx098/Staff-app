@@ -139,16 +139,41 @@ input:-webkit-autofill:focus {
   transition: background-color 9999s ease-in-out 0s;
 }
 
-/* Visible keyboard focus on every interactive element */
+/* Visible keyboard focus. Buttons and links keep a crisp outline — they have
+   no border of their own to warm up. */
 button:focus-visible,
 a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
 [role="button"]:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* Text controls get a soft accent halo sitting OUTSIDE the field instead of a
+   hard two-pixel outline drawn on top of it. Applied to the elements
+   themselves, so every input in the app picks it up without being told. */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* Fields built as a bordered wrapper around a bare input (the auth fields,
+   the search bars) wear the halo on the wrapper, or it would be drawn inside
+   the box around the text. The inner control's own halo is suppressed. */
+.field-halo:focus-within {
+  outline: none;
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.field-halo input:focus,
+.field-halo textarea:focus,
+.field-halo select:focus {
+  border-color: transparent;
+  box-shadow: none;
 }
 
 /* ==========================================================================

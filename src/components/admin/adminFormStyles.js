@@ -17,7 +17,7 @@ export const addButtonClass =
   "flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-accent px-3.5 text-[12.5px] font-bold text-white shadow-glass transition-transform duration-300 ease-in-out active:scale-95";
 
 export const searchWrapClass =
-  "glass-surface flex h-11 items-center gap-3 rounded-input px-4 transition-colors duration-300 ease-in-out focus-within:border-accent-line";
+  "glass-surface field-halo flex h-11 items-center gap-3 rounded-input px-4 transition-all duration-300 ease-in-out";
 
 export const searchInputClass =
   "h-full min-w-0 flex-1 bg-transparent text-[13.5px] text-content outline-none placeholder:text-content-muted";
