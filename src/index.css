@@ -7,7 +7,7 @@
    A flat, warm, operations-first identity — not glassmorphism. Strict palette:
      bg #FFF8F2 warm white · surface #FFFFFF solid · primary #F97316 orange
      text #1C1917 / #78716C warm neutrals · hairline #EFE3D8
-   Inter for UI, Space Mono for transport data (times, fares, route numbers).
+   Plus Jakarta Sans for UI, IBM Plex Mono for transport data (times, fares).
    Every Tailwind color name in tailwind.config.js is a var(--x) reference into
    this block — change values here only, markup never hardcodes hex.
    ========================================================================== */
@@ -70,9 +70,9 @@
 
   --shadow-auth: 0 10px 34px rgba(28, 25, 23, 0.1);
 
-  --font-display: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "Space Mono", ui-monospace, "SF Mono", monospace;
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
 
   --overlay-strength: 0.55;
 
@@ -98,9 +98,27 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
+  /* A touch tighter than the font ships: at interface sizes the default
+     tracking reads loose and a little soft. */
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Headings tighten further as they get larger — the optical trick that keeps a
+   big line looking set rather than typed. */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.025em;
+}
+
+/* Figures line up in columns wherever numbers are compared — fares, seat
+   counts, times — without having to reach for the mono face. */
+table,
+[data-nums] {
+  font-variant-numeric: tabular-nums;
 }
 
 ::selection {
@@ -189,8 +207,9 @@ select:focus {
 }
 
 /* Transport data — departure times, ETAs, fares, route numbers, bus numbers.
-   Space Mono with tabular figures gives the numeric, timetable/ticket-stub
-   character; negative tracking keeps it tight. Use on the value, not labels. */
+   IBM Plex Mono with tabular figures gives the timetable/ticket-stub character
+   and even-width digits, so columns of times line up. Use on the value, not
+   the label. */
 .data-mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
