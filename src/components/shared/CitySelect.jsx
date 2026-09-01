@@ -43,7 +43,7 @@ function CitySelect({ cities = [], value, onChange, placeholder = "Select city",
         type="button"
         disabled={disabled}
         onClick={() => setOpen((prev) => !prev)}
-        className="glass-surface flex h-12 w-full items-center gap-3 rounded-input px-4 text-left text-sm font-semibold text-content field-halo outline-none transition disabled:opacity-50 md:text-base"
+        className="glass-surface flex h-[46px] w-full items-center gap-3 rounded-input px-3.5 text-left text-[14px] font-semibold text-content field-halo outline-none transition disabled:opacity-50"
       >
         <Icon className="h-5 w-5 shrink-0 text-accent" />
         <span className={value ? "truncate text-content" : "truncate text-content-muted"}>

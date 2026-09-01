@@ -84,7 +84,7 @@ function GlassInput({
            caller's own one-sided override (the password eye's pr-12) beats
            px-4 in the cascade, but would tie with pr-4 and lose. */
         className={`glass-surface w-full rounded-input text-[14px] text-content outline-none transition-colors duration-300 ease-in-out placeholder:text-content-muted focus:border-accent-line px-4 ${
-          isTextarea ? "min-h-[104px] py-3.5" : "h-[52px]"
+          isTextarea ? "min-h-[92px] py-3" : "h-[46px]"
         } ${Icon ? "pl-11" : ""} ${className}`}
         {...props}
       />
