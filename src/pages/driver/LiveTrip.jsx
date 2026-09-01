@@ -523,7 +523,7 @@ function LiveTrip() {
           {route.all.length > 1 && (
             <Polyline
               positions={route.all}
-              weight={6}
+              weight={9}
               color={ROUTE_LINE.casing}
               opacity={0.9}
               lineCap="round"
@@ -534,7 +534,7 @@ function LiveTrip() {
           {route.travelled.length > 1 && (
             <Polyline
               positions={route.travelled}
-              weight={3}
+              weight={5}
               color={ROUTE_LINE.travelled}
               opacity={1}
               lineCap="round"
@@ -542,17 +542,17 @@ function LiveTrip() {
             />
           )}
 
-          {/* Light-blue round dots for the part still ahead — a 1px dash with
+          {/* The leg still ahead — a 1px dash with
               round caps renders as evenly spaced dots (matches the design).
               Static, not animated: the moving version read as busy. */}
           {route.ahead.length > 1 && (
             <Polyline
               positions={route.ahead}
-              weight={3}
+              weight={5}
               color={ROUTE_LINE.ahead}
               opacity={1}
               lineCap="round"
-              dashArray="1 8"
+              lineJoin="round"
             />
           )}
 
