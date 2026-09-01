@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TileLayer } from "react-leaflet";
-import { Layers, Moon, Satellite, Sun } from "lucide-react";
+import { Layers, Map as MapIcon, Moon, Satellite, Sun } from "lucide-react";
 
 /* MapTiler, when a key is configured, gives the clean navigation-grade light
    and dark basemaps this screen wants. Without one the app still works: the
@@ -23,7 +23,7 @@ const maptiler = (style, ext = "png") => ({
   attribution: MAPTILER_ATTR,
 });
 
-/* Three styles, and only three — a switcher with near-duplicate entries is
+/* Four styles, one entry each — a switcher with near-duplicate entries is
    worse than no switcher.
    Esri splits its canvases into a base that draws the ground and a reference
    layer that draws the names, so both halves are listed: the base alone is a
@@ -32,19 +32,29 @@ const maptiler = (style, ext = "png") => ({
    Leaflet stretches the last ones for the closer zooms tracking needs. */
 const BASES = MAPTILER_KEY
   ? {
+      streets: { label: "Streets", icon: MapIcon, ...maptiler("streets-v2") },
       light: { label: "Light", icon: Sun, ...maptiler("basic-v2") },
       dark: { label: "Dark", icon: Moon, ...maptiler("dataviz-dark") },
       satellite: { label: "Satellite", icon: Satellite, ...maptiler("hybrid", "jpg") },
     }
   : {
+      streets: {
+        label: "Streets",
+        icon: MapIcon,
+        /* Plain OpenStreetMap — the map this screen was built on, sharp at
+           every zoom and free of any key. */
+        tiles: [
+          { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", maxNative: 19 },
+        ],
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      },
       light: {
         label: "Light",
         icon: Sun,
-        /* The street map rather than the light-grey canvas: the canvas is
-           built as a backdrop for data and strips out so much that its place
-           names float on empty ground. */
         tiles: [
-          { url: `${ESRI}/World_Street_Map/MapServer/tile/{z}/{y}/{x}`, maxNative: 19 },
+          { url: `${ESRI}/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`, maxNative: 16 },
+          { url: `${ESRI}/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}`, maxNative: 16 },
         ],
         attribution: ESRI_ATTR,
       },
@@ -68,7 +78,7 @@ const BASES = MAPTILER_KEY
       },
     };
 
-const ORDER = ["light", "dark", "satellite"];
+const ORDER = ["streets", "light", "dark", "satellite"];
 
 /**
  * The base map, and the control that switches it.
@@ -82,10 +92,10 @@ const ORDER = ["light", "dark", "satellite"];
  * the app's own styling instead of being wrestled into it with CSS.
  */
 function MapLayers({ topOffset = 12 }) {
-  const [active, setActive] = useState("light");
+  const [active, setActive] = useState("streets");
   const [open, setOpen] = useState(false);
 
-  const base = BASES[active] || BASES.light;
+  const base = BASES[active] || BASES.streets;
 
   return (
     <>

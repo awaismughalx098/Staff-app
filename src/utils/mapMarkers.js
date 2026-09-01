@@ -4,21 +4,22 @@ import L from "leaflet";
    so both screens show the same vehicle and the same route language. */
 
 export const ROUTE_COLORS = {
-  passed: "#22C55E",
-  current: "#3B82F6",
-  upcoming: "#6B7280",
+  passed: "#16A34A",
+  /* The brand orange, like everything else the app calls "now". */
+  current: "#F97316",
+  upcoming: "#A8A29E",
 };
 
 export const ROUTE_LINE = {
-  /* Solid line, two tones: the covered part is a strong dark blue, the part
-     still ahead is a light blue — so the split reads at a glance. White casing
-     lifts both off the pale basemap. */
+  /* Solid line, two tones of the brand orange: the covered part is deep, the
+     part still ahead is light — so the split reads at a glance. White casing
+     lifts both off the basemap, pale or dark. */
   casing: "#FFFFFF",
-  travelled: "#1E40AF",
-  ahead: "#93C5FD",
+  travelled: "#C2410C",
+  ahead: "#FDBA74",
 };
 
-/* A clean circular badge — a blue disc with a white bus glyph, ringed by the
+/* A clean circular badge — an orange disc with a white bus glyph, ringed by the
    pulse. Reads instantly as "the bus is here" against the pale basemap, where
    the old top-down coach looked like clutter. Kept upright on purpose (no
    heading rotation) so the glyph is always legible. */
@@ -34,7 +35,7 @@ export const createBusIcon = ({ live = true } = {}) =>
     html: `
       <div class="lg-bus-marker">
         ${live ? '<span class="lg-bus-pulse"></span>' : ""}
-        <span style="position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:999px;background:#3B82F6;border:2.5px solid #ffffff;box-shadow:0 6px 14px rgba(15,23,42,.35);">
+        <span style="position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:999px;background:#F97316;border:2.5px solid #ffffff;box-shadow:0 6px 14px rgba(15,23,42,.35);">
           ${busGlyph}
         </span>
       </div>`,
