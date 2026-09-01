@@ -2,40 +2,39 @@ import { LayersControl, TileLayer } from "react-leaflet";
 
 const OSM_ATTR =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-
-const CARTO_ATTR = `${OSM_ATTR} &copy; <a href="https://carto.com/attributions">CARTO</a>`;
+const ESRI_ATTR = "Tiles &copy; Esri";
 
 /* Base layers shared by the passenger and driver live maps.
-   The default is CARTO Positron — a pale, low-clutter basemap that matches the
-   Aurora Glass theme and lets the blue route and bus marker read cleanly,
-   instead of raw OpenStreetMap's dense yellow roads and label soup. Voyager
-   (a touch more detail), Dark, and Satellite stay as alternates — satellite is
-   genuinely useful for spotting where a bus actually is on the ground. */
+ *
+ * CARTO's basemaps were the default until they began stamping "API KEY
+ * REQUIRED" across every tile — their free tier now wants a key. These three
+ * need none.
+ *
+ * Light is Esri's grey canvas: pale and low-clutter, so the blue route and the
+ * bus marker carry the map. It is only drawn up to zoom 16, so maxNativeZoom
+ * pins that and Leaflet stretches the last tiles for the closer zooms tracking
+ * needs — slightly soft rather than blank. Streets is plain OpenStreetMap, the
+ * fallback that is always there and sharp at every zoom. Satellite is genuinely
+ * useful for seeing where a bus actually is on the ground.
+ */
 function MapLayers() {
   return (
     <>
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="Light">
           <TileLayer
-            attribution={CARTO_ATTR}
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-            maxZoom={20}
+            attribution={ESRI_ATTR}
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+            maxNativeZoom={16}
+            maxZoom={19}
           />
         </LayersControl.BaseLayer>
 
         <LayersControl.BaseLayer name="Streets">
           <TileLayer
-            attribution={CARTO_ATTR}
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-            maxZoom={20}
-          />
-        </LayersControl.BaseLayer>
-
-        <LayersControl.BaseLayer name="Dark">
-          <TileLayer
-            attribution={CARTO_ATTR}
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            maxZoom={20}
+            attribution={OSM_ATTR}
+            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxZoom={19}
           />
         </LayersControl.BaseLayer>
 
@@ -43,6 +42,7 @@ function MapLayers() {
           <TileLayer
             attribution="Imagery &copy; Esri, Maxar, Earthstar Geographics"
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            maxNativeZoom={19}
             maxZoom={19}
           />
         </LayersControl.BaseLayer>
