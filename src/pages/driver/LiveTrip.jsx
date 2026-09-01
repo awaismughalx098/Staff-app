@@ -45,7 +45,7 @@ import MapLayers from "../../components/maps/MapLayers";
    high-accuracy requirement rather than giving up. */
 const GEO_OPTIONS = {
   enableHighAccuracy: true,
-  maximumAge: 5000,
+  maximumAge: 2000,
   timeout: 30000,
 };
 
@@ -60,6 +60,13 @@ const GEO_OPTIONS_RELAXED = {
    passengers with a frozen bus. Cleared only when the driver explicitly stops
    GPS or ends the trip — not on ordinary unmount/navigation. */
 const GPS_ACTIVE_KEY = "driverGpsActive";
+
+/* How often the device posts its position.
+   Two seconds rather than five: the passenger map interpolates between the
+   fixes it is given, and a longer gap means it is always animating toward a
+   position the bus has already left. Every post is one small write, and the
+   server drops a fix that has not moved far enough to matter. */
+const SYNC_INTERVAL_MS = 2000;
 
 /* Frames the full route once, then follows the bus as GPS pings arrive */
 function FitRoute({ points, tripId }) {
@@ -435,7 +442,7 @@ function LiveTrip() {
   useEffect(() => {
     if (!gpsActive || !trip?._id) return;
 
-    intervalRef.current = setInterval(syncLocationToServer, 5000);
+    intervalRef.current = setInterval(syncLocationToServer, SYNC_INTERVAL_MS);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
