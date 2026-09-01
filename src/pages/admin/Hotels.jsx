@@ -39,6 +39,8 @@ const EMPTY_FORM = {
   contact: "",
   lat: "",
   lng: "",
+  /* Free unless the Super Admin upgrades it — see config/hotelPlans.js. */
+  plan: "free",
 };
 
 function Hotels() {
@@ -109,6 +111,7 @@ function Hotels() {
       contact: hotel.contact,
       lat: Number.isFinite(hotel.location?.lat) ? hotel.location.lat : "",
       lng: Number.isFinite(hotel.location?.lng) ? hotel.location.lng : "",
+      plan: hotel.plan || "free",
     });
     resetMedia();
     setKeepImages(hotel.images || []);
@@ -352,6 +355,49 @@ function Hotels() {
                     placeholder="WiFi, Breakfast, Parking, Pool"
                     className={inputClass}
                   />
+
+                {/* The plan is the Super Admin's to grant. It decides how much
+                    media this hotel's rooms may carry, and whether its bookings
+                    are charged the Rs 100 fee. */}
+                <div className="sm:col-span-2">
+                  <label className={labelClass}>Plan</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      {
+                        id: "free",
+                        title: "Free",
+                        note: "1 photo per room · Rs 100 booking fee",
+                      },
+                      {
+                        id: "pro",
+                        title: "Pro",
+                        note: "5 photos + 2 videos per room · no booking fee",
+                      },
+                    ].map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, plan: option.id }))}
+                        className={`rounded-input border p-3 text-left transition-colors ${
+                          form.plan === option.id
+                            ? "border-accent bg-accent-soft"
+                            : "border-line bg-surface hover:border-accent-line"
+                        }`}
+                      >
+                        <span
+                          className={`block text-[13px] font-bold ${
+                            form.plan === option.id ? "text-accent" : "text-content"
+                          }`}
+                        >
+                          {option.title}
+                        </span>
+                        <span className="mt-0.5 block text-[11px] leading-tight text-content-muted">
+                          {option.note}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 </label>
 
                 <label className="block">

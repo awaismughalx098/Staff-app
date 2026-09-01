@@ -46,6 +46,7 @@ const BusAdminDrivers = lazy(() => import("./pages/admin/busAdmin/BusAdminDriver
 const HotelAdminDashboard = lazy(() => import("./pages/admin/hotelAdmin/HotelAdminDashboard"));
 const HotelAdminBookings = lazy(() => import("./pages/admin/hotelAdmin/HotelAdminBookings"));
 const HotelAdminManage = lazy(() => import("./pages/admin/hotelAdmin/HotelAdminManage"));
+const HotelAdminRooms = lazy(() => import("./pages/admin/hotelAdmin/HotelAdminRooms"));
 
 /* ===== TOUR / RELIGIOUS / AIRLINE / CONSULTANT ADMIN ===== */
 const TourAdminConsole = lazy(() => import("./pages/admin/tourAdmin/TourAdminConsole"));
@@ -142,6 +143,7 @@ function App() {
             {/* Hotel Admin */}
             <Route path="/hotel-admin" element={<ProtectedRoute role="admin"><HotelAdminDashboard /></ProtectedRoute>} />
             <Route path="/hotel-admin/bookings" element={<ProtectedRoute role="admin"><HotelAdminBookings /></ProtectedRoute>} />
+            <Route path="/hotel-admin/rooms" element={<ProtectedRoute role="admin"><HotelAdminRooms /></ProtectedRoute>} />
             <Route path="/hotel-admin/manage" element={<ProtectedRoute role="admin"><HotelAdminManage /></ProtectedRoute>} />
 
             {/* Airline / Consultant Admin */}

@@ -68,6 +68,7 @@ export const ADMIN_NAV = [
   /* Hotel Admin */
   { label: "Dashboard", path: "/hotel-admin", icon: LayoutDashboard, roles: ["hotelAdmin"] },
   { label: "Bookings", path: "/hotel-admin/bookings", icon: BedDouble, roles: ["hotelAdmin"] },
+  { label: "Rooms", path: "/hotel-admin/rooms", icon: BedDouble, roles: ["hotelAdmin"] },
   { label: "My Hotel", path: "/hotel-admin/manage", icon: Building2, roles: ["hotelAdmin"] },
   { label: "My Airline", path: "/airline-admin", icon: Plane, roles: ["airlineAdmin"] },
 
