@@ -510,7 +510,7 @@ function LiveTrip() {
           scrollWheelZoom
           className="h-full w-full"
         >
-          <MapLayers />
+          <MapLayers topOffset={150} />
 
           {/* White casing so the blue route pops off the pale basemap */}
           {route.all.length > 1 && (
