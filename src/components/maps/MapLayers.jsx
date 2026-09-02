@@ -30,14 +30,14 @@ const maptiler = (style, ext = "png") => ({
    map with no city on it. Satellite needs the same, since imagery carries no
    lettering. Canvas tiles stop at zoom 16, so maxNativeZoom pins that and
    Leaflet stretches the last ones for the closer zooms tracking needs. */
-const BASES = MAPTILER_KEY
-  ? {
+const MAPTILER_BASES = {
       streets: { label: "Streets", icon: MapIcon, ...maptiler("streets-v2") },
       light: { label: "Light", icon: Sun, ...maptiler("basic-v2") },
       dark: { label: "Dark", icon: Moon, ...maptiler("dataviz-dark") },
       satellite: { label: "Satellite", icon: Satellite, ...maptiler("hybrid", "jpg") },
-    }
-  : {
+};
+
+const ESRI_BASES = {
       streets: {
         label: "Streets",
         icon: MapIcon,
@@ -76,7 +76,7 @@ const BASES = MAPTILER_KEY
         ],
         attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics",
       },
-    };
+};
 
 const ORDER = ["streets", "light", "dark", "satellite"];
 
@@ -95,6 +95,14 @@ function MapLayers({ topOffset = 12 }) {
   const [active, setActive] = useState("streets");
   const [open, setOpen] = useState(false);
 
+  /* MapTiler is used when a key is configured — but a wrong key, an expired
+     one or a style name it does not serve returns errors instead of tiles, and
+     the map would simply be blank. One tile error is enough to fall back to
+     the Esri layers, which need no key and always answer. */
+  const [tilesFailed, setTilesFailed] = useState(false);
+  const usingMaptiler = Boolean(MAPTILER_KEY) && !tilesFailed;
+
+  const BASES = usingMaptiler ? MAPTILER_BASES : ESRI_BASES;
   const base = BASES[active] || BASES.streets;
 
   return (
@@ -111,6 +119,18 @@ function MapLayers({ topOffset = 12 }) {
           attribution={i === 0 ? base.attribution : undefined}
           maxNativeZoom={tile.maxNative}
           maxZoom={19}
+          eventHandlers={
+            usingMaptiler
+              ? {
+                  tileerror: () => {
+                    console.warn(
+                      "[map] MapTiler returned no tile — check VITE_MAPTILER_KEY and the style name. Falling back to Esri."
+                    );
+                    setTilesFailed(true);
+                  },
+                }
+              : undefined
+          }
         />
       ))}
 
