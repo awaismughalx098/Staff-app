@@ -59,9 +59,20 @@ export const getFriendlyError = (
     return serverMessage;
   }
 
-  if (BY_STATUS[status]) return BY_STATUS[status];
+  const base = BY_STATUS[status] || fallback;
 
-  return fallback;
+  /* On a 5xx the server hands back a short reference for the request it
+     failed on. Quoting it lets support find the exact incident — the stack,
+     the endpoint, the account — without any of that being shown here. It
+     names a request and authorises nothing, which is what makes it safe to
+     put on a passenger's screen. */
+  const reference = typeof data?.reference === "string" ? data.reference : "";
+
+  if (status >= 500 && reference) {
+    return `${base} (Reference: ${reference})`;
+  }
+
+  return base;
 };
 
 export default getFriendlyError;

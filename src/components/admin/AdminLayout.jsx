@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  Activity,
   BedDouble,
   Building2,
   BusFront,
@@ -35,6 +36,7 @@ export const ADMIN_NAV = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard, roles: ["superadmin"] },
   { label: "Revenue", path: "/admin/revenue", icon: Wallet, roles: ["superadmin"] },
   { label: "Bookings", path: "/admin/bookings", icon: Ticket, roles: ["superadmin"] },
+  { label: "System Health", path: "/admin/system-health", icon: Activity, roles: ["superadmin"] },
   { label: "Refunds", path: "/admin/refunds", icon: Undo2, roles: ["superadmin"] },
   { label: "Companies", path: "/admin/companies", icon: Building2, roles: ["superadmin"] },
   { label: "Drivers", path: "/admin/drivers", icon: UserRound, roles: ["superadmin"] },
