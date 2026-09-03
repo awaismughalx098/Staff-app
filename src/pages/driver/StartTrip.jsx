@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   BusFront,
+  Radio,
   MapPin,
   Navigation,
   Play,
@@ -13,7 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { startTrip } from "../../services/TripService";
+import { getDriverRunningTrip, startTrip } from "../../services/TripService";
 import { getCities } from "../../services/cityService";
 import { getRouteSuggestions } from "../../services/routeSuggestionService";
 import CitySelect from "../../components/shared/CitySelect";
@@ -38,6 +39,12 @@ function StartTrip() {
   const [loadingCities, setLoadingCities] = useState(true);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [starting, setStarting] = useState(false);
+
+  /* The trip this driver already has running, if any. Checked on arrival
+     rather than discovered by failing: a driver who came back to the app to
+     look at their trip should not have to fill this form in and be refused to
+     find out it is already going. */
+  const [runningTrip, setRunningTrip] = useState(null);
 
   const [form, setForm] = useState({
     fromCity: "",
@@ -151,11 +158,56 @@ function StartTrip() {
       toast.success("Trip started successfully");
       navigate("/driver/live-trip");
     } catch (error) {
+      const conflict = error?.response?.data?.activeTrip;
+
+      /* Their own trip, running. Surface the way back instead of leaving them
+         with an error and no next step. */
+      if (conflict?.isMine) {
+        const res = await getDriverRunningTrip().catch(() => null);
+        if (res?.data) setRunningTrip(res.data);
+      }
+
       toast.error(error?.response?.data?.message || "Failed to start trip");
     } finally {
       setStarting(false);
     }
   };
+
+  /* Shown above the form whenever a trip of this driver's is already running.
+     Deliberately not a redirect: the driver may have come here to start a trip
+     on a different bus, and deciding for them would make that impossible.
+     Plain JSX rather than a component declared here — a component defined in
+     the render body is a new type on every render, so React remounts it. */
+  const runningTripBanner = runningTrip ? (
+      <div className="mx-auto mb-4 flex max-w-5xl flex-wrap items-center gap-3 rounded-card border border-accent-line bg-accent-soft px-4 py-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-white">
+          <Radio className="h-4 w-4" />
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span className="block text-[13px] font-bold text-content">
+            You have a trip running
+          </span>
+          <span className="block truncate text-[11.5px] text-content-muted">
+            {runningTrip.bus?.busNo ? `${runningTrip.bus.busNo} · ` : ""}
+            {runningTrip.stops?.[0]?.city} →{" "}
+            {runningTrip.stops?.[runningTrip.stops.length - 1]?.city}
+          </span>
+        </span>
+
+        <button
+          type="button"
+          onClick={() => {
+            /* Live Trip reads this to reopen without waiting on a fetch. */
+            localStorage.setItem("activeDriverTrip", JSON.stringify(runningTrip));
+            navigate("/driver/live-trip");
+          }}
+          className="shrink-0 rounded-input bg-accent px-4 py-2 text-[13px] font-bold text-white"
+        >
+          Show my trip
+        </button>
+      </div>
+  ) : null;
 
   if (!selectedBus) {
     return (
@@ -179,6 +231,8 @@ function StartTrip() {
           <ArrowLeft className="h-5 w-5" />
           Back
         </button>
+
+        {runningTripBanner}
 
         {/* Colorful gradient hero */}
         <section
