@@ -82,6 +82,7 @@ const EMPTY_BUS_FORM = {
   amenities: "",
   legFares: [],
   stopTimes: [],
+  stopPoints: [],
   route: emptyRoute,
 };
 
@@ -264,31 +265,45 @@ function BusesPanel({ companyId }) {
     });
   };
 
-  /* Stop times follow the stops list, rebuilt whenever it changes, preserving
-     already-entered times by matching city name. */
+  /* One row per stop on the whole path, origin and destination included —
+     those are stops the bus reaches too, and tracking has to know where they
+     are. Rebuilt whenever the route changes, keeping anything already typed by
+     matching on the name so editing the middle of a route does not wipe the
+     coordinates either side of it. */
   useEffect(() => {
-    const { stops } = form.route;
+    const { fromCity, toCity, stops } = form.route;
+    const path = fromCity && toCity ? [fromCity, ...stops, toCity] : [];
 
     setForm((f) => {
-      const nextTimes = stops.map((city) => {
-        const existing = f.stopTimes.find((s) => s.city === city);
-        return { city, time: existing ? existing.time : "" };
+      const next = path.map((name) => {
+        const kept = f.stopPoints.find((p) => p.name === name);
+        return (
+          kept || {
+            name,
+            lat: "",
+            lng: "",
+            scheduledArrival: "",
+            scheduledDeparture: "",
+            dwellMinutes: "",
+            isActive: true,
+          }
+        );
       });
 
       const same =
-        nextTimes.length === f.stopTimes.length &&
-        nextTimes.every((s, i) => s.city === f.stopTimes[i]?.city);
+        next.length === f.stopPoints.length &&
+        next.every((p, i) => p.name === f.stopPoints[i]?.name);
 
-      return same ? f : { ...f, stopTimes: nextTimes };
+      return same ? f : { ...f, stopPoints: next };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.route.stops]);
+  }, [form.route.fromCity, form.route.toCity, form.route.stops]);
 
-  const updateStopTime = (idx, value) => {
+  const updateStopPoint = (idx, field, value) => {
     setForm((f) => {
-      const times = [...f.stopTimes];
-      times[idx] = { ...times[idx], time: value };
-      return { ...f, stopTimes: times };
+      const points = [...f.stopPoints];
+      points[idx] = { ...points[idx], [field]: value };
+      return { ...f, stopPoints: points };
     });
   };
 
@@ -311,6 +326,17 @@ function BusesPanel({ companyId }) {
       amenities: Array.isArray(bus.amenities) ? bus.amenities.join(", ") : "",
       legFares: Array.isArray(bus.legFares) ? bus.legFares : [],
       stopTimes: Array.isArray(bus.stopTimes) ? bus.stopTimes : [],
+      /* Blanks rather than nulls, so an unset coordinate shows as an empty box
+         instead of the word "null" in the field. */
+      stopPoints: (bus.route?.stopPoints || []).map((p) => ({
+        name: p.name,
+        lat: p.lat ?? "",
+        lng: p.lng ?? "",
+        scheduledArrival: p.scheduledArrival || "",
+        scheduledDeparture: p.scheduledDeparture || "",
+        dwellMinutes: p.dwellMinutes ?? "",
+        isActive: p.isActive !== false,
+      })),
       route: {
         fromCity: bus.route?.fromCity || "",
         toCity: bus.route?.toCity || "",
@@ -369,9 +395,17 @@ function BusesPanel({ companyId }) {
         "legFares",
         JSON.stringify(form.legFares.filter((l) => l.from && l.to && l.fare !== ""))
       );
+      /* stopTimes is not sent: the server derives it from these, so the
+         schedule cannot be entered twice and end up disagreeing with itself. */
       formData.append(
-        "stopTimes",
-        JSON.stringify(form.stopTimes.filter((s) => s.city && s.time))
+        "stopPoints",
+        JSON.stringify(
+          form.stopPoints.filter(
+            (p) =>
+              p.name &&
+              (p.lat !== "" || p.scheduledArrival || p.scheduledDeparture)
+          )
+        )
       );
       if (form.image) formData.append("image", form.image);
 
@@ -837,25 +871,111 @@ function BusesPanel({ companyId }) {
                 />
               )}
 
-              {form.stopTimes.length > 0 && (
-                <div className="space-y-2 border-t border-line pt-3">
-                  <p className="flex items-center gap-1.5 text-[11px] font-semibold text-content-muted">
-                    <Clock className="h-3.5 w-3.5" />
-                    Scheduled time at each stop
-                  </p>
-                  {form.stopTimes.map((stop, idx) => (
-                    <div key={stop.city} className="flex items-center gap-3">
-                      <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-content">
-                        {stop.city}
-                      </span>
-                      <input
-                        type="time"
-                        value={stop.time}
-                        onChange={(e) => updateStopTime(idx, e.target.value)}
-                        className={`${inputClass} w-32 shrink-0`}
-                      />
-                    </div>
-                  ))}
+              {form.stopPoints.length > 0 && (
+                <div className="space-y-2.5 border-t border-line pt-3">
+                  <div>
+                    <p className="flex items-center gap-1.5 text-[11px] font-semibold text-content-muted">
+                      <MapPin className="h-3.5 w-3.5" />
+                      Where each stop is, and when the bus is due
+                    </p>
+                    {/* Said once, here, because it is the reason the fields
+                        exist: a city's centre is not its bus stand, and live
+                        tracking can only be as accurate as these. */}
+                    <p className="mt-1 text-[10.5px] leading-relaxed text-content-muted">
+                      A stop with no coordinates falls back to the city centre, which
+                      can be kilometres from the terminal. Set them to track arrivals
+                      properly.
+                    </p>
+                  </div>
+
+                  {form.stopPoints.map((point, idx) => {
+                    const placed = point.lat !== "" && point.lng !== "";
+
+                    return (
+                      <div
+                        key={point.name}
+                        className="rounded-lg border border-line bg-surface p-2.5"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-surface-2 text-[10px] font-bold text-content-muted">
+                            {idx + 1}
+                          </span>
+                          <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-content">
+                            {point.name}
+                          </span>
+                          <span
+                            className={`shrink-0 rounded px-1.5 py-0.5 text-[9.5px] font-bold uppercase ${
+                              placed
+                                ? "bg-status-live-soft text-status-live"
+                                : "bg-surface-2 text-content-muted"
+                            }`}
+                          >
+                            {placed ? "Placed" : "City centre"}
+                          </span>
+                        </div>
+
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          <input
+                            inputMode="decimal"
+                            placeholder="Latitude"
+                            value={point.lat}
+                            onChange={(e) => updateStopPoint(idx, "lat", e.target.value)}
+                            className={`${inputClass} h-9 text-[12px]`}
+                          />
+                          <input
+                            inputMode="decimal"
+                            placeholder="Longitude"
+                            value={point.lng}
+                            onChange={(e) => updateStopPoint(idx, "lng", e.target.value)}
+                            className={`${inputClass} h-9 text-[12px]`}
+                          />
+                        </div>
+
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                          <label className="block">
+                            <span className="mb-1 block text-[9.5px] font-semibold uppercase tracking-wide text-content-muted">
+                              Arrives
+                            </span>
+                            <input
+                              type="time"
+                              value={point.scheduledArrival}
+                              onChange={(e) =>
+                                updateStopPoint(idx, "scheduledArrival", e.target.value)
+                              }
+                              className={`${inputClass} h-9 text-[12px]`}
+                            />
+                          </label>
+                          <label className="block">
+                            <span className="mb-1 block text-[9.5px] font-semibold uppercase tracking-wide text-content-muted">
+                              Departs
+                            </span>
+                            <input
+                              type="time"
+                              value={point.scheduledDeparture}
+                              onChange={(e) =>
+                                updateStopPoint(idx, "scheduledDeparture", e.target.value)
+                              }
+                              className={`${inputClass} h-9 text-[12px]`}
+                            />
+                          </label>
+                          <label className="block">
+                            <span className="mb-1 block text-[9.5px] font-semibold uppercase tracking-wide text-content-muted">
+                              Dwell min
+                            </span>
+                            <input
+                              inputMode="numeric"
+                              placeholder="—"
+                              value={point.dwellMinutes}
+                              onChange={(e) =>
+                                updateStopPoint(idx, "dwellMinutes", e.target.value)
+                              }
+                              className={`${inputClass} h-9 text-[12px]`}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
