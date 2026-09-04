@@ -50,3 +50,16 @@ export const removeWalkOnPassenger = async (tripId, bookingId) => {
   const response = await api.delete(`/trips/${tripId}/seat-map/${bookingId}`);
   return response.data;
 };
+
+/**
+ * Upload GPS fixes the driver's phone captured while it was offline.
+ *
+ * Separate from updateTripLocation because it is a different operation: these
+ * are historic points being caught up, not the bus's position now. The server
+ * refuses an id it has already stored, so a batch whose response was lost can
+ * be retried without being applied twice.
+ */
+export const replayQueuedLocations = async (tripId, points) => {
+  const response = await api.post(`/trips/${tripId}/location/batch`, { points });
+  return response.data;
+};

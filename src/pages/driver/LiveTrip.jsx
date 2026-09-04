@@ -28,8 +28,15 @@ import "leaflet/dist/leaflet.css";
 import {
   endTrip,
   getDriverRunningTrip,
+  replayQueuedLocations,
   updateTripLocation,
 } from "../../services/TripService";
+import {
+  clearQueue,
+  enqueue,
+  flushQueue,
+  queueLength,
+} from "../../utils/gpsQueue";
 import {
   ROUTE_LINE,
   buildRoute,
@@ -367,12 +374,36 @@ function LiveTrip() {
     localStorage.removeItem(GPS_ACTIVE_KEY);
   };
 
+  /* Sends whatever the queue is holding, oldest first, and stops at the first
+     failure — a failure almost always means the connection went again, and
+     firing the rest at it only spends the driver's battery failing eleven more
+     times. Guarded against overlapping runs so a slow upload and the next
+     two-second tick cannot send the same batch twice. */
+  const flushingRef = useRef(false);
+
+  const flushPendingFixes = async (tripId) => {
+    if (flushingRef.current || queueLength() === 0) return;
+
+    flushingRef.current = true;
+    try {
+      const { uploaded } = await flushQueue((points) =>
+        replayQueuedLocations(tripId, points)
+      );
+
+      if (uploaded > 0) {
+        toast.success(`Caught up ${uploaded} position${uploaded === 1 ? "" : "s"}`);
+      }
+    } finally {
+      flushingRef.current = false;
+    }
+  };
+
   const syncLocationToServer = async () => {
     if (!trip?._id || !latestLocationRef.current) return;
 
-    try {
-      const current = latestLocationRef.current;
+    const current = latestLocationRef.current;
 
+    try {
       const response = await updateTripLocation(trip._id, {
         latitude: current.lat,
         longitude: current.lng,
@@ -384,6 +415,12 @@ function LiveTrip() {
       const updatedTrip = normalizeTrip(response);
       if (updatedTrip) setTrip(updatedTrip);
       syncFailedRef.current = false;
+
+      /* The link is up: anything captured while it was down goes now. Done
+         after the live send so the current position is never delayed behind a
+         backlog — where the bus is now matters more to a waiting passenger
+         than where it was ten minutes ago. */
+      flushPendingFixes(trip._id);
     } catch (error) {
       const status = error?.response?.status;
       const message = error?.response?.data?.message;
@@ -400,9 +437,29 @@ function LiveTrip() {
       /* Surface what the server actually said — "Failed to sync" alone gives
          the driver nothing to act on. Warn once per failure streak so a patchy
          signal doesn't bury the screen in toasts. */
+      /* No response at all means the request never reached the server — a
+         dead zone, a tower handover, aeroplane mode. The fix is real and the
+         bus was really there, so it is kept rather than dropped; a server that
+         answered and refused is a different thing and is not queued. */
+      if (!error?.response) {
+        enqueue({
+          tripId: trip._id,
+          latitude: current.lat,
+          longitude: current.lng,
+          speed: current.speed,
+          accuracy: current.accuracy,
+          heading: current.heading,
+        });
+      }
+
       if (!syncFailedRef.current) {
         syncFailedRef.current = true;
-        toast.error(message || "Couldn't reach the server to sync GPS");
+        const pending = queueLength();
+        toast.error(
+          pending > 0
+            ? `Offline — saving positions on this device (${pending})`
+            : message || "Couldn't reach the server to sync GPS"
+        );
       }
     }
   };
@@ -416,7 +473,18 @@ function LiveTrip() {
     try {
       setEnding(true);
       stopGPS();
+
+      /* One last attempt to send what is queued, before the trip is closed and
+         those fixes have nowhere to go. Best effort: a driver ending a trip in
+         a dead zone must not be blocked by an upload that cannot succeed. */
+      await flushPendingFixes(trip._id).catch(() => {});
+
       await endTrip(trip._id);
+
+      /* Whatever is still queued belongs to a trip that is over. Kept any
+         longer it would be replayed onto the driver's NEXT trip, putting one
+         journey's positions on another. */
+      clearQueue();
 
       localStorage.removeItem("activeDriverTrip");
       localStorage.removeItem("selectedDriverBus");
