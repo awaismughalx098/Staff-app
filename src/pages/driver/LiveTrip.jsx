@@ -46,6 +46,25 @@ import {
   createStopIcon,
 } from "../../utils/mapMarkers";
 import MapLayers from "../../components/maps/MapLayers";
+import ScheduleChip from "../../components/tracking/ScheduleChip";
+
+/* The operator's own clock, so the actual departure the driver reads matches
+   the timetable it is being judged against — and matches what the passenger is
+   shown for the same moment. Never the device's timezone. */
+const OPERATOR_TIMEZONE = "Asia/Karachi";
+
+const formatClock = (value) => {
+  if (!value) return "—";
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "—";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: OPERATOR_TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(d);
+};
 
 /* A phone gets a GPS fix in seconds; a laptop relies on Wi-Fi positioning and
    can need far longer, so the first attempt is patient and the retry drops the
@@ -398,11 +417,22 @@ function LiveTrip() {
     }
   };
 
+  /* True while a sync is in flight.
+     The two-second timer fires whether or not the previous request came back,
+     so on a slow link several were in the air at once — and they could reach
+     the server out of order, letting an older fix overwrite a newer one and
+     walk the passenger's bus backwards. One at a time: if a request is still
+     going, this tick is skipped and the next one carries the newer position
+     anyway, because it is read from the ref at send time. */
+  const syncInFlightRef = useRef(false);
+
   const syncLocationToServer = async () => {
     if (!trip?._id || !latestLocationRef.current) return;
+    if (syncInFlightRef.current) return;
 
     const current = latestLocationRef.current;
 
+    syncInFlightRef.current = true;
     try {
       const response = await updateTripLocation(trip._id, {
         latitude: current.lat,
@@ -412,8 +442,12 @@ function LiveTrip() {
         accuracy: current.accuracy,
       });
 
+      /* Merged, not replaced. The reply is now only the fields this screen
+         reads — the whole populated trip, route geometry and all, was ~27 KB
+         arriving every two seconds down the same connection the next fix has
+         to go up. Everything not named in the reply stays as it was. */
       const updatedTrip = normalizeTrip(response);
-      if (updatedTrip) setTrip(updatedTrip);
+      if (updatedTrip) setTrip((prev) => (prev ? { ...prev, ...updatedTrip } : updatedTrip));
       syncFailedRef.current = false;
 
       /* The link is up: anything captured while it was down goes now. Done
@@ -461,6 +495,8 @@ function LiveTrip() {
             : message || "Couldn't reach the server to sync GPS"
         );
       }
+    } finally {
+      syncInFlightRef.current = false;
     }
   };
 
@@ -727,6 +763,39 @@ function LiveTrip() {
                 </h2>
               </div>
             </div>
+
+            {/* Schedule adherence. Every value comes from the server, which is
+                the same computation the passenger's screen reads — a driver and
+                a passenger must never see different verdicts about one bus.
+                Before the coach actually pulls out this counts down; it does
+                not claim to be early for something that has not happened. */}
+            {(trip.scheduledDeparture || trip.departureStatusLabel) && (
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-card border border-line bg-elevated px-4 py-3 text-[12px]">
+                {trip.scheduledDeparture && (
+                  <span className="text-content-muted">
+                    Scheduled{" "}
+                    <span className="font-bold text-content">
+                      {trip.scheduledDeparture}
+                    </span>
+                  </span>
+                )}
+
+                {trip.actualDepartureAt && (
+                  <span className="text-content-muted">
+                    Actual{" "}
+                    <span className="font-bold text-content">
+                      {formatClock(trip.actualDepartureAt)}
+                    </span>
+                  </span>
+                )}
+
+                <ScheduleChip
+                  status={trip.departureStatus}
+                  label={trip.departureStatusLabel}
+                  className="ml-auto"
+                />
+              </div>
+            )}
 
             <div className="mt-3 grid grid-cols-5 gap-2">
               <Info icon={Signal} label="Speed" value={`${location.speed || 0} km/h`} />

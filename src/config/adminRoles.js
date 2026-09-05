@@ -1,6 +1,7 @@
 import {
   BusFront,
   CalendarDays,
+  Car,
   GraduationCap,
   Hotel,
   Mountain,
@@ -45,6 +46,19 @@ export const ADMIN_ROLES = {
     home: "/religious-admin",
     icon: Sparkles,
     blurb: "Manage your Umrah and Ziyarat packages and bookings.",
+  },
+  /* Scoped to a RentalCompany, not a Company — the two businesses share no
+     data, and the distinct field is what keeps a rental operator out of every
+     intercity query. Mirrors ROLE_SCOPE.rentalAdmin on the backend. */
+  rentalAdmin: {
+    label: "Rental Company Admin",
+    short: "Rentals",
+    scopeField: "rentalCompany",
+    scopeLabel: "Rental company",
+    loginPath: "/rental-admin/login",
+    home: "/rental-admin",
+    icon: Car,
+    blurb: "Manage your fleet, hire requests and earnings.",
   },
   hotelAdmin: {
     label: "Hotel Admin",

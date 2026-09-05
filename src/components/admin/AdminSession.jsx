@@ -2,18 +2,18 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 
 import api from "../../api/axios";
 import { getAdminToken, logoutAdmin } from "../../utils/adminAuth";
-import { normalizeRole, roleConfig, isFullAdmin } from "../../config/adminRoles";
+import {
+  ADMIN_ROLES,
+  normalizeRole,
+  roleConfig,
+  isFullAdmin,
+} from "../../config/adminRoles";
 
-/* Every scoped role the console knows how to draw. */
-const SCOPED_ROLES = [
-  "busAdmin",
-  "tourAdmin",
-  "religiousAdmin",
-  "hotelAdmin",
-  "airlineAdmin",
-  "eventAdmin",
-  "consultantAdmin",
-];
+/* Every scoped role the console knows how to draw — taken from the role table
+   rather than listed again. A role in that table but missing from this list
+   resolves to null, which sends a perfectly valid session back to the sign-in
+   page with nothing saying why. */
+const SCOPED_ROLES = Object.keys(ADMIN_ROLES);
 
 /* Every value the backend enum allows maps to one of these, so anything else
    means the account is on a role this build does not know how to render. */

@@ -42,6 +42,7 @@ import { getHotels } from "../../services/hotelService";
 import { getAirlines } from "../../services/airlineService";
 import { getEvents } from "../../services/eventService";
 import { getConsultants } from "../../services/consultantService";
+import { getRentalCompanies } from "../../services/rentalService";
 import { ADMIN_ROLES, normalizeRole, roleConfig } from "../../config/adminRoles";
 
 /* The categories the owner browses. Bus Companies is the only one with two
@@ -59,6 +60,7 @@ const CATEGORIES = [
   },
   { id: "tour", label: "Tour Companies", blurb: "Northern and adventure operators", role: "tourAdmin" },
   { id: "religious", label: "Religious Tours", blurb: "Umrah and Ziyarat operators", role: "religiousAdmin" },
+  { id: "rental", label: "Rental Companies", blurb: "Wedding, car and shuttle rentals", role: "rentalAdmin" },
   { id: "hotel", label: "Hotels", blurb: "One admin per property", role: "hotelAdmin" },
   { id: "airline", label: "Airlines", blurb: "One admin per airline", role: "airlineAdmin" },
   { id: "event", label: "Events", blurb: "One admin per event", role: "eventAdmin" },
@@ -72,6 +74,7 @@ const EMPTY_ADMIN = {
   password: "",
   role: "superadmin",
   company: "",
+  rentalCompany: "",
   hotel: "",
   airline: "",
   event: "",
@@ -100,6 +103,7 @@ function Admins() {
   const [airlines, setAirlines] = useState([]);
   const [events, setEvents] = useState([]);
   const [consultants, setConsultants] = useState([]);
+  const [rentalCompanies, setRentalCompanies] = useState([]);
 
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -112,7 +116,7 @@ function Admins() {
 
   const load = async () => {
     setLoading(true);
-    const [a, d, c, h, al, e, cn] = await Promise.allSettled([
+    const [a, d, c, h, al, e, cn, rc] = await Promise.allSettled([
       getAdmins(),
       getDrivers(),
       getCompanies(),
@@ -120,6 +124,9 @@ function Admins() {
       getAirlines(),
       getEvents(),
       getConsultants(),
+      /* A high limit rather than the default page: this list only fills a
+         picker, and a company missing from it cannot be given an admin. */
+      getRentalCompanies({ limit: 200 }),
     ]);
     if (a.status === "fulfilled") setAdmins(normalizeData(a.value));
     if (d.status === "fulfilled") setDrivers(normalizeData(d.value));
@@ -128,6 +135,7 @@ function Admins() {
     if (al.status === "fulfilled") setAirlines(normalizeData(al.value));
     if (e.status === "fulfilled") setEvents(normalizeData(e.value));
     if (cn.status === "fulfilled") setConsultants(normalizeData(cn.value));
+    if (rc.status === "fulfilled") setRentalCompanies(normalizeData(rc.value));
     if (a.status === "rejected") toast.error("Unable to load admins");
     setLoading(false);
   };
@@ -159,6 +167,7 @@ function Admins() {
         r.name,
         r.email,
         r.company?.name,
+        r.rentalCompany?.name,
         r.hotel?.name,
         r.airline?.name,
         r.event?.title,
@@ -179,14 +188,26 @@ function Admins() {
         .filter((c) => (c.kind || "bus") === config.companyKind)
         .map((c) => ({ id: c._id, label: c.name }));
     }
+    if (config.scopeField === "rentalCompany")
+      return rentalCompanies.map((c) => ({
+        id: c._id,
+        /* The status is shown because a suspended company can still be given
+           an admin, and that admin would sign in to a console with nothing
+           on the market. */
+        label: c.status === "approved" ? c.name : `${c.name} (${c.status})`,
+      }));
     if (config.scopeField === "hotel")
       return hotels.map((h) => ({ id: h._id, label: `${h.name} — ${h.city}` }));
     if (config.scopeField === "airline")
       return airlines.map((a) => ({ id: a._id, label: `${a.name} (${a.code})` }));
     if (config.scopeField === "consultant")
       return consultants.map((c) => ({ id: c._id, label: `${c.name} — ${c.city}` }));
-    return events.map((e) => ({ id: e._id, label: `${e.title} — ${e.city}` }));
-  }, [config, companies, hotels, airlines, events, consultants]);
+    if (config.scopeField === "event")
+      return events.map((e) => ({ id: e._id, label: `${e.title} — ${e.city}` }));
+    /* Every scope field is named above. Falling through to one of the lists
+       would quietly offer the wrong entities for a role added later. */
+    return [];
+  }, [config, companies, rentalCompanies, hotels, airlines, events, consultants]);
 
   const busCompanies = useMemo(
     () => companies.filter((c) => (c.kind || "bus") === "bus"),
@@ -224,6 +245,7 @@ function Admins() {
       password: "",
       role: ADMIN_ROLES[row.role] ? row.role : "superadmin",
       company: row.company?._id || row.company || "",
+      rentalCompany: row.rentalCompany?._id || row.rentalCompany || "",
       hotel: row.hotel?._id || row.hotel || "",
       airline: row.airline?._id || row.airline || "",
       event: row.event?._id || row.event || "",
