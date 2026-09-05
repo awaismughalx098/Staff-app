@@ -22,6 +22,7 @@ const AdminNews = lazy(() => import("./pages/admin/News"));
 const AdminTours = lazy(() => import("./pages/admin/Tours"));
 const AdminHotels = lazy(() => import("./pages/admin/Hotels"));
 const AdminAirlines = lazy(() => import("./pages/admin/Airlines"));
+const AdminRentals = lazy(() => import("./pages/admin/RentalCompanies"));
 const AdminConsultants = lazy(() => import("./pages/admin/Consultants"));
 const AdminEvents = lazy(() => import("./pages/admin/Events"));
 const AdminAdmins = lazy(() => import("./pages/admin/Admins"));
@@ -50,6 +51,14 @@ const HotelAdminManage = lazy(() => import("./pages/admin/hotelAdmin/HotelAdminM
 const HotelAdminRooms = lazy(() => import("./pages/admin/hotelAdmin/HotelAdminRooms"));
 
 /* ===== TOUR / RELIGIOUS / AIRLINE / CONSULTANT ADMIN ===== */
+/* Rental Company Admin. No live-tracking page in this console by design — a
+   hired vehicle is not tracked. */
+const RentalAdminDashboard = lazy(() => import("./pages/admin/rentalAdmin/RentalAdminDashboard"));
+const RentalAdminFleet = lazy(() => import("./pages/admin/rentalAdmin/RentalAdminFleet"));
+const RentalAdminBookings = lazy(() => import("./pages/admin/rentalAdmin/RentalAdminBookings"));
+const RentalAdminRevenue = lazy(() => import("./pages/admin/rentalAdmin/RentalAdminRevenue"));
+const RentalAdminManage = lazy(() => import("./pages/admin/rentalAdmin/RentalAdminManage"));
+
 const TourAdminConsole = lazy(() => import("./pages/admin/tourAdmin/TourAdminConsole"));
 const TourAdminPackages = lazy(() => import("./pages/admin/tourAdmin/TourAdminPackages"));
 const AirlineAdminConsole = lazy(() => import("./pages/admin/airlineAdmin/AirlineAdminConsole"));
@@ -93,6 +102,7 @@ function App() {
             <Route path="/bus-admin/login" element={<Navigate to="/login" replace />} />
             <Route path="/tour-admin/login" element={<Navigate to="/login" replace />} />
             <Route path="/religious-admin/login" element={<Navigate to="/login" replace />} />
+            <Route path="/rental-admin/login" element={<Navigate to="/login" replace />} />
             <Route path="/hotel-admin/login" element={<Navigate to="/login" replace />} />
             <Route path="/airline-admin/login" element={<Navigate to="/login" replace />} />
             <Route path="/event-admin/login" element={<Navigate to="/login" replace />} />
@@ -115,6 +125,7 @@ function App() {
             <Route path="/admin/tours" element={<ProtectedRoute role="admin"><AdminTours /></ProtectedRoute>} />
             <Route path="/admin/hotels" element={<ProtectedRoute role="admin"><AdminHotels /></ProtectedRoute>} />
             <Route path="/admin/airlines" element={<ProtectedRoute role="admin"><AdminAirlines /></ProtectedRoute>} />
+            <Route path="/admin/rentals" element={<ProtectedRoute role="admin"><AdminRentals /></ProtectedRoute>} />
             <Route path="/admin/consultants" element={<ProtectedRoute role="admin"><AdminConsultants /></ProtectedRoute>} />
             <Route path="/admin/events" element={<ProtectedRoute role="admin"><AdminEvents /></ProtectedRoute>} />
             <Route path="/admin/admins" element={<ProtectedRoute role="admin"><AdminAdmins /></ProtectedRoute>} />
@@ -135,6 +146,13 @@ function App() {
             <Route path="/bus-admin/fleet" element={<ProtectedRoute role="admin"><BusAdminFleet /></ProtectedRoute>} />
             <Route path="/bus-admin/bookings" element={<ProtectedRoute role="admin"><BusAdminBookings /></ProtectedRoute>} />
             <Route path="/bus-admin/drivers" element={<ProtectedRoute role="admin"><BusAdminDrivers /></ProtectedRoute>} />
+
+            {/* Rental Company Admin */}
+            <Route path="/rental-admin" element={<ProtectedRoute role="admin"><RentalAdminDashboard /></ProtectedRoute>} />
+            <Route path="/rental-admin/fleet" element={<ProtectedRoute role="admin"><RentalAdminFleet /></ProtectedRoute>} />
+            <Route path="/rental-admin/bookings" element={<ProtectedRoute role="admin"><RentalAdminBookings /></ProtectedRoute>} />
+            <Route path="/rental-admin/revenue" element={<ProtectedRoute role="admin"><RentalAdminRevenue /></ProtectedRoute>} />
+            <Route path="/rental-admin/manage" element={<ProtectedRoute role="admin"><RentalAdminManage /></ProtectedRoute>} />
 
             {/* Tour / Religious Admin */}
             <Route path="/tour-admin" element={<ProtectedRoute role="admin"><TourAdminConsole role="tourAdmin" /></ProtectedRoute>} />

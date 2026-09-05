@@ -7,6 +7,7 @@ import {
   Building2,
   BusFront,
   CalendarDays,
+  Car,
   Globe,
   GraduationCap,
   LayoutDashboard,
@@ -42,6 +43,7 @@ export const ADMIN_NAV = [
   { label: "Drivers", path: "/admin/drivers", icon: UserRound, roles: ["superadmin"] },
   { label: "Tours", path: "/admin/tours", icon: Globe, roles: ["superadmin"] },
   { label: "Hotels", path: "/admin/hotels", icon: Building2, roles: ["superadmin"] },
+  { label: "Rentals", path: "/admin/rentals", icon: Car, roles: ["superadmin"] },
   { label: "Airlines", path: "/admin/airlines", icon: Plane, roles: ["superadmin"] },
   { label: "Consultants", path: "/admin/consultants", icon: GraduationCap, roles: ["superadmin"] },
   { label: "Events", path: "/admin/events", icon: CalendarDays, roles: ["superadmin"] },
@@ -73,6 +75,14 @@ export const ADMIN_NAV = [
   { label: "Rooms", path: "/hotel-admin/rooms", icon: BedDouble, roles: ["hotelAdmin"] },
   { label: "My Hotel", path: "/hotel-admin/manage", icon: Building2, roles: ["hotelAdmin"] },
   { label: "My Airline", path: "/airline-admin", icon: Plane, roles: ["airlineAdmin"] },
+
+  /* Rental Company Admin. No live-tracking section anywhere in this console —
+     a hired vehicle is not tracked, and there is nothing here to open. */
+  { label: "Dashboard", path: "/rental-admin", icon: LayoutDashboard, roles: ["rentalAdmin"] },
+  { label: "My Fleet", path: "/rental-admin/fleet", icon: Car, roles: ["rentalAdmin"] },
+  { label: "Requests", path: "/rental-admin/bookings", icon: Ticket, roles: ["rentalAdmin"] },
+  { label: "Earnings", path: "/rental-admin/revenue", icon: Wallet, roles: ["rentalAdmin"] },
+  { label: "My Company", path: "/rental-admin/manage", icon: Building2, roles: ["rentalAdmin"] },
 
   /* Consultant Admin */
   { label: "My Listing", path: "/consultant-admin", icon: GraduationCap, roles: ["consultantAdmin"] },
