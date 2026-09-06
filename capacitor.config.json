@@ -1,0 +1,14 @@
+{
+  "appId": "pro.bytenovatech.letsgoo.staff",
+  "appName": "Let's Goo Transit Staff",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "BackgroundGeolocation": {}
+  }
+}

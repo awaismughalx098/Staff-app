@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleTask"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+    </application>
+
+    <!-- Permissions -->
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+        Live trip tracking.
+
+        FINE and COARSE are the ordinary runtime pair. COARSE is declared
+        because Android 12+ lets the user grant only approximate location, and
+        an app that declares FINE alone is simply refused rather than being
+        offered the coarse choice.
+
+        BACKGROUND_LOCATION is what keeps a trip reporting once the driver locks
+        the phone. From Android 11 it cannot be requested in the same prompt as
+        the others - the user has to be sent to Settings and choose "Allow all
+        the time" - which is why the UI treats it as a separate, later step
+        rather than part of the first request.
+
+        maxSdkVersion is deliberately NOT set on any of these: they are needed on
+        every version this app runs on.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!--
+        The foreground service is the only reason tracking survives the screen
+        going off: Android does not freeze a process that owns one. It must show
+        a persistent notification, which is the price of the privilege and is
+        also honest - the driver can see that their location is being reported.
+
+        FOREGROUND_SERVICE_LOCATION is required from Android 14 (API 34); the
+        service is refused at startup without it.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+    <!-- Android 13+ will not display the tracking notification without this. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+        Lets the driver be sent to the battery-optimisation screen. Only used to
+        OPEN that screen; the app never requests the exemption silently.
+    -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!--
+        A bus needs real GPS, not wifi triangulation, but the app must still
+        install on a device without it rather than being hidden from the Play
+        Store listing.
+    -->
+    <!--
+        tools:replace is load-bearing. The plugin's own manifest declares this
+        feature without android:required, which defaults to TRUE, and the
+        merger keeps the stronger requirement - so without this override the
+        Play Store would hide the app from every device that reports no GPS
+        hardware, including many emulators and tablets used for testing.
+    -->
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false"
+        tools:replace="android:required" />
+</manifest>
