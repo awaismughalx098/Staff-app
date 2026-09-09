@@ -62,7 +62,7 @@ function DriverSplash() {
               delay: reducedMotion ? 0 : 0.32 + i * 0.035,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="font-display text-[28px] font-bold tracking-tight text-content"
+            className="font-display text-3xl font-bold tracking-tight text-content"
           >
             {char === " " ? " " : char}
           </motion.span>

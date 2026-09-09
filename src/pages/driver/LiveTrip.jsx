@@ -719,7 +719,7 @@ function LiveTrip() {
         <div className="pointer-events-none absolute inset-x-0 top-0 z-[600] p-4 pt-safe">
           <div className="glass-surface pointer-events-auto mx-auto flex w-full max-w-md items-center justify-between rounded-card p-4">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
                 Driver Live Trip
               </p>
               <h1 className="mt-0.5 truncate font-display text-xl font-bold text-content">
@@ -728,7 +728,7 @@ function LiveTrip() {
             </div>
 
             <div
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${
                 !gpsActive
                   ? "bg-elevated text-content-muted"
                   : hasFix
@@ -754,7 +754,7 @@ function LiveTrip() {
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-accent">
+                <p className="text-xs font-semibold uppercase tracking-wider text-accent">
                   Current Route
                 </p>
                 <h2 className="truncate font-display text-lg font-bold text-content">
@@ -770,7 +770,7 @@ function LiveTrip() {
                 Before the coach actually pulls out this counts down; it does
                 not claim to be early for something that has not happened. */}
             {(trip.scheduledDeparture || trip.departureStatusLabel) && (
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-card border border-line bg-elevated px-4 py-3 text-[12px]">
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-card border border-line bg-elevated px-4 py-3 text-sm">
                 {trip.scheduledDeparture && (
                   <span className="text-content-muted">
                     Scheduled{" "}
@@ -797,7 +797,10 @@ function LiveTrip() {
               </div>
             )}
 
-            <div className="mt-3 grid grid-cols-5 gap-2">
+            {/* Five across leaves about 57px per tile on a 320px phone, which
+                truncates every value these exist to show — and the driver reads
+                these at a wheel. Three then five. */}
+            <div className="mt-3 grid grid-cols-3 gap-2 xs:grid-cols-5">
               <Info icon={Signal} label="Speed" value={`${location.speed || 0} km/h`} />
               <Info
                 icon={MapPin}
@@ -821,8 +824,8 @@ function LiveTrip() {
                 className="rounded-xl border border-route-green-soft bg-route-green-soft p-2.5 text-center transition hover:brightness-110"
               >
                 <Users className="mx-auto h-4 w-4 text-route-green" />
-                <p className="mt-1 text-[10px] text-content-muted">Seats</p>
-                <p className="truncate font-display text-[12px] font-bold text-route-green">
+                <p className="mt-1 text-2xs text-content-muted">Seats</p>
+                <p className="truncate font-display text-sm font-bold text-route-green">
                   {trip.freeSeats ?? 0}
                 </p>
               </button>
@@ -873,7 +876,7 @@ function LiveTrip() {
                       {stop.city}
                     </span>
                   </div>
-                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-content-muted">
+                  <span className="shrink-0 text-2xs font-bold uppercase tracking-wide text-content-muted">
                     {stop.distanceFromBus
                       ? `${(stop.distanceFromBus / 1000).toFixed(1)} km`
                       : stop.status}
@@ -906,8 +909,8 @@ function Info({ icon: Icon, label, value }) {
   return (
     <div className="rounded-xl border border-line bg-elevated p-2.5 text-center">
       <Icon className="mx-auto h-4 w-4 text-accent" />
-      <p className="mt-1 text-[10px] text-content-muted">{label}</p>
-      <p className="truncate font-display text-[12px] font-bold text-content">{value}</p>
+      <p className="mt-1 text-2xs text-content-muted">{label}</p>
+      <p className="truncate font-display text-sm font-bold text-content">{value}</p>
     </div>
   );
 }

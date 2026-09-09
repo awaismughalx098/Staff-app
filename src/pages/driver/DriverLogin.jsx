@@ -116,7 +116,7 @@ function DriverLogin() {
             </button>
           </div>
 
-          <GlassButton type="submit" disabled={loading} className="h-12 w-full text-[15px]">
+          <GlassButton type="submit" disabled={loading} className="h-12 w-full text-lg">
             {loading ? "Signing in..." : "Login as Driver"}
             {!loading && <ArrowRight className="h-5 w-5" />}
           </GlassButton>

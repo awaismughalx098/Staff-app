@@ -104,11 +104,11 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
       <div className="relative flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-t-[28px] bg-bg shadow-premium sm:max-w-lg sm:rounded-card">
         <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
           <div className="min-w-0">
-            <p className="font-display text-[15px] font-bold text-content">
+            <p className="font-display text-lg font-bold text-content">
               Seats on {map?.busNo || "this bus"}
             </p>
             {map && (
-              <p className="mt-0.5 flex items-center gap-1.5 text-[12px] text-content-muted">
+              <p className="mt-0.5 flex items-center gap-1.5 text-sm text-content-muted">
                 <MapPin className="h-3.5 w-3.5 text-accent" />
                 At {map.currentCity} · {map.free} free · {map.occupied} taken
               </p>
@@ -130,7 +130,7 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
               <Loader2 className="h-6 w-6 animate-spin text-accent" />
             </div>
           ) : !map ? (
-            <p className="py-8 text-center text-[13px] text-content-muted">
+            <p className="py-8 text-center text-base text-content-muted">
               No seat map for this trip.
             </p>
           ) : (
@@ -143,7 +143,7 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
                         key={seat.seatNumber}
                         type="button"
                         onClick={() => pick(seat)}
-                        className={`h-11 w-11 shrink-0 cursor-pointer rounded-xl text-[12px] font-bold transition-transform active:scale-95 ${seatClass(
+                        className={`h-11 w-11 shrink-0 cursor-pointer rounded-xl text-sm font-bold transition-transform active:scale-95 ${seatClass(
                           seat,
                           selected === seat.seatNumber
                         )}`}
@@ -160,7 +160,7 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
                 ))}
               </div>
 
-              <div className="mt-4 flex flex-wrap justify-center gap-3 text-[11px] text-content-muted">
+              <div className="mt-4 flex flex-wrap justify-center gap-3 text-xs text-content-muted">
                 <span className="flex items-center gap-1.5">
                   <span className="h-3 w-3 rounded bg-route-green-soft" /> Free from here
                 </span>
@@ -174,7 +174,7 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
 
               {/* Seating someone who got on here */}
               <div className="mt-5 border-t border-line pt-4">
-                <p className="flex items-center gap-1.5 text-[12.5px] font-bold text-content">
+                <p className="flex items-center gap-1.5 text-sm font-bold text-content">
                   <UserPlus className="h-4 w-4 text-accent" />
                   {selected
                     ? `Seat ${selected} — where are they going?`
@@ -186,7 +186,7 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
                     <select
                       value={form.toCity}
                       onChange={(e) => setForm({ ...form, toCity: e.target.value })}
-                      className="h-12 w-full rounded-input border border-line bg-white/60 px-3 text-[13px] text-content outline-none"
+                      className="h-12 w-full rounded-input border border-line bg-white/60 px-3 text-base text-content outline-none"
                     >
                       {(map.destinations || []).map((city) => (
                         <option key={city} value={city}>
@@ -202,12 +202,12 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
                           setForm({ ...form, passengerName: e.target.value })
                         }
                         placeholder="Name (optional)"
-                        className="h-12 w-full rounded-input border border-line bg-white/60 px-3 text-[13px] text-content outline-none"
+                        className="h-12 w-full rounded-input border border-line bg-white/60 px-3 text-base text-content outline-none"
                       />
                       <select
                         value={form.gender}
                         onChange={(e) => setForm({ ...form, gender: e.target.value })}
-                        className="h-12 w-full rounded-input border border-line bg-white/60 px-3 text-[13px] text-content outline-none"
+                        className="h-12 w-full rounded-input border border-line bg-white/60 px-3 text-base text-content outline-none"
                       >
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -218,7 +218,7 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
                       type="button"
                       onClick={save}
                       disabled={saving}
-                      className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent text-[14px] font-bold text-white shadow-premium transition-transform active:scale-[0.98] disabled:opacity-50"
+                      className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent text-lg font-bold text-white shadow-premium transition-transform active:scale-[0.98] disabled:opacity-50"
                     >
                       {saving ? (
                         <Loader2 className="h-4 w-4 animate-spin" />

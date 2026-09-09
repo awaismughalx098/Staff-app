@@ -77,11 +77,11 @@ function Profile() {
           </div>
 
           <div className="min-w-0 flex-1">
-            <h2 className="truncate font-display text-[17px] font-bold text-content">
+            <h2 className="truncate font-display text-xl font-bold text-content">
               {profile.name}
             </h2>
-            <p className="truncate text-[12px] text-content-muted">{profile.email}</p>
-            <div className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-success">
+            <p className="truncate text-sm text-content-muted">{profile.email}</p>
+            <div className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-bold text-success">
               <ShieldCheck className="h-3.5 w-3.5" />
               Verified Driver
             </div>
@@ -162,7 +162,7 @@ function Profile() {
           type="button"
           variant="danger"
           onClick={handleLogout}
-          className="mt-6 h-12 w-full text-[14px]"
+          className="mt-6 h-12 w-full text-lg"
         >
           <LogOut className="h-5 w-5" />
           Logout

@@ -23,10 +23,10 @@ const formatDate = (date) =>
 function Row({ label, value, mono }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-[12px] text-content-muted">{label}</span>
+      <span className="text-sm text-content-muted">{label}</span>
       <span
-        className={`truncate text-[13px] font-semibold text-content ${
-          mono ? "font-mono text-[11px]" : ""
+        className={`truncate text-base font-semibold text-content ${
+          mono ? "font-mono text-xs" : ""
         }`}
       >
         {value}
@@ -214,7 +214,7 @@ function ScanTicket() {
                     <BusFront className="h-5 w-5" />
                     {ticket.bus?.busNo || "Bus"}
                   </p>
-                  <p className="mt-1 truncate text-[11px] text-white/80">
+                  <p className="mt-1 truncate text-xs text-white/80">
                     {ticket.isPrimary ? "Primary Passenger" : "Passenger"} Ticket
                   </p>
                 </div>
@@ -222,7 +222,7 @@ function ScanTicket() {
                   <p className="font-display text-2xl font-black leading-none">
                     {ticket.seatNumber}
                   </p>
-                  <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-white/80">
+                  <p className="mt-1 text-2xs font-bold uppercase tracking-wide text-white/80">
                     {ticket.gender}
                   </p>
                 </div>
@@ -245,7 +245,7 @@ function ScanTicket() {
               <button
                 type="button"
                 onClick={scanAnother}
-                className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-accent font-display text-[13px] font-bold text-white transition-transform active:scale-[0.98]"
+                className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-accent font-display text-base font-bold text-white transition-transform active:scale-[0.98]"
               >
                 <QrCode className="h-4 w-4" />
                 Scan another

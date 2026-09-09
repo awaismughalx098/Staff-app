@@ -185,10 +185,10 @@ function StartTrip() {
         </span>
 
         <span className="min-w-0 flex-1">
-          <span className="block text-[13px] font-bold text-content">
+          <span className="block text-base font-bold text-content">
             You have a trip running
           </span>
-          <span className="block truncate text-[11.5px] text-content-muted">
+          <span className="block truncate text-xs text-content-muted">
             {runningTrip.bus?.busNo ? `${runningTrip.bus.busNo} · ` : ""}
             {runningTrip.stops?.[0]?.city} →{" "}
             {runningTrip.stops?.[runningTrip.stops.length - 1]?.city}
@@ -202,7 +202,7 @@ function StartTrip() {
             localStorage.setItem("activeDriverTrip", JSON.stringify(runningTrip));
             navigate("/driver/live-trip");
           }}
-          className="shrink-0 rounded-input bg-accent px-4 py-2 text-[13px] font-bold text-white"
+          className="shrink-0 rounded-input bg-accent px-4 py-2 text-base font-bold text-white"
         >
           Show my trip
         </button>
