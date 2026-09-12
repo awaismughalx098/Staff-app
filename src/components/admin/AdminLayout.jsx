@@ -12,6 +12,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LifeBuoy,
+  Megaphone,
   LogOut,
   MoreHorizontal,
   Newspaper,
@@ -50,6 +51,7 @@ export const ADMIN_NAV = [
   { label: "Consultants", path: "/admin/consultants", icon: GraduationCap, roles: ["superadmin"] },
   { label: "Events", path: "/admin/events", icon: CalendarDays, roles: ["superadmin"] },
   { label: "News", path: "/admin/news", icon: Newspaper, roles: ["superadmin"] },
+  { label: "Promotions", path: "/admin/promotions", icon: Megaphone, roles: ["superadmin"] },
   { label: "Admins", path: "/admin/admins", icon: UserCog, roles: ["superadmin"] },
 
   /* Event Admin */

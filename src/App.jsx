@@ -19,6 +19,7 @@ const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const Companies = lazy(() => import("./pages/admin/Companies"));
 const Drivers = lazy(() => import("./pages/admin/Drivers"));
 const AdminNews = lazy(() => import("./pages/admin/News"));
+const AdminPromotions = lazy(() => import("./pages/admin/Promotions"));
 const AdminTours = lazy(() => import("./pages/admin/Tours"));
 const AdminHotels = lazy(() => import("./pages/admin/Hotels"));
 const AdminAirlines = lazy(() => import("./pages/admin/Airlines"));
@@ -134,6 +135,7 @@ function App() {
             <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
             <Route path="/admin/refunds" element={<ProtectedRoute role="admin"><AdminRefunds /></ProtectedRoute>} />
             <Route path="/admin/support" element={<ProtectedRoute role="admin"><AdminSupport /></ProtectedRoute>} />
+            <Route path="/admin/promotions" element={<ProtectedRoute role="admin"><AdminPromotions /></ProtectedRoute>} />
             <Route path="/admin/system-health" element={<ProtectedRoute role="admin"><SystemHealth /></ProtectedRoute>} />
 
             {/* Event Admin */}
