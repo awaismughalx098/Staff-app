@@ -162,7 +162,7 @@ function AdminLogin() {
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center text-content-muted transition-colors duration-200 hover:text-content"
                 >
-                  {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
 
@@ -172,9 +172,9 @@ function AdminLogin() {
                 className="h-[52px] w-full text-[15px]"
               >
                 {loading ? (
-                  <Loader2 className="h-4.5 w-4.5 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <ShieldCheck className="h-4.5 w-4.5" />
+                  <ShieldCheck className="h-5 w-5" />
                 )}
                 Login as Admin
               </GlassButton>

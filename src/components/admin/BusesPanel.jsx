@@ -353,7 +353,7 @@ function BusesPanel({ companyId }) {
       toast.success("Bus deleted successfully");
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Bus delete failed");
+      toast.error(error?.friendlyMessage || "Bus delete failed");
     }
   };
 
@@ -421,7 +421,7 @@ function BusesPanel({ companyId }) {
       resetForm();
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Bus operation failed");
+      toast.error(error?.friendlyMessage || "Bus operation failed");
     } finally {
       setSaving(false);
     }

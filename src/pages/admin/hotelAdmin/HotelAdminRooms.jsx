@@ -56,7 +56,7 @@ function RoomCard({ room, onEdit, onDelete }) {
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="truncate text-[14px] font-bold text-content">{room.name}</p>
+            <p className="line-clamp-2 break-words text-[14px] font-bold leading-snug text-content">{room.name}</p>
             <p className="mt-0.5 text-[11.5px] text-content-muted">
               {room.roomType}
               {room.bedType ? ` · ${room.bedType}` : ""}
@@ -77,7 +77,9 @@ function RoomCard({ room, onEdit, onDelete }) {
             Rs {Number(room.pricePerNight).toLocaleString()}
             <span className="font-normal text-content-muted"> /night</span>
           </span>
-          <span className="data-mono">{room.totalUnits} rooms</span>
+          <span className="data-mono">
+            {room.totalUnits} {room.totalUnits === 1 ? "room" : "rooms"}
+          </span>
           {room.videos?.length > 0 && (
             <span className="flex items-center gap-1">
               <Video className="h-3.5 w-3.5" />
@@ -86,11 +88,13 @@ function RoomCard({ room, onEdit, onDelete }) {
           )}
         </div>
 
-        <div className="mt-2 flex gap-2">
+        {/* 36px tall: the old 28px buttons were below a comfortable thumb
+            target, side by side, with Delete next to Edit. */}
+        <div className="mt-2.5 flex gap-2">
           <button
             type="button"
             onClick={() => onEdit(room)}
-            className="flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-1 text-[12px] font-semibold text-content transition-colors hover:border-accent-line hover:text-accent"
+            className="flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-[12.5px] font-semibold text-content transition-colors hover:border-accent-line hover:text-accent"
           >
             <Pencil className="h-3.5 w-3.5" />
             Edit
@@ -98,7 +102,7 @@ function RoomCard({ room, onEdit, onDelete }) {
           <button
             type="button"
             onClick={() => onDelete(room)}
-            className="flex items-center gap-1.5 rounded-lg border border-danger/30 px-2.5 py-1 text-[12px] font-semibold text-danger transition-colors hover:bg-danger/10"
+            className="flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-[12.5px] font-semibold text-danger transition-colors hover:border-danger"
           >
             <Trash2 className="h-3.5 w-3.5" />
             Delete
@@ -222,6 +226,10 @@ function HotelAdminRooms() {
     videoFiles.forEach((f) => data.append("videos", f));
     keepImages.forEach((url) => data.append("keepImages", url));
     keepVideos.forEach((url) => data.append("keepVideos", url));
+    /* An empty entry says "keep none". Sending nothing meant "leave as is",
+       so the last photo or video of a room could never be removed. */
+    if (editing && keepImages.length === 0) data.append("keepImages", "");
+    if (editing && keepVideos.length === 0) data.append("keepVideos", "");
 
     setSaving(true);
     try {
@@ -233,7 +241,7 @@ function HotelAdminRooms() {
       setOpen(false);
       load();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Could not save the room");
+      toast.error(err?.friendlyMessage || "Could not save the room");
     } finally {
       setSaving(false);
     }
@@ -246,7 +254,7 @@ function HotelAdminRooms() {
       toast.success(res.message || "Deleted");
       load();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Could not delete the room");
+      toast.error(err?.friendlyMessage || "Could not delete the room");
     }
   };
 

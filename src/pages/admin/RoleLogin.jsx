@@ -140,7 +140,7 @@ function RoleLogin({ role }) {
         >
           <GlassCard className="mt-6 p-6">
             <p className="flex items-center gap-2 font-display text-[15px] font-bold text-content">
-              <Icon className="h-4.5 w-4.5 text-accent" />
+              <Icon className="h-5 w-5 text-accent" />
               Sign in
             </p>
             <p className="mt-1 text-[12.5px] text-content-muted">
@@ -170,9 +170,9 @@ function RoleLogin({ role }) {
                   className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center text-content-muted transition-colors duration-200 hover:text-content"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4.5 w-4.5" />
+                    <EyeOff className="h-5 w-5" />
                   ) : (
-                    <Eye className="h-4.5 w-4.5" />
+                    <Eye className="h-5 w-5" />
                   )}
                 </button>
               </div>
@@ -180,12 +180,12 @@ function RoleLogin({ role }) {
               <GlassButton type="submit" disabled={loading} className="h-[52px] w-full">
                 {loading ? (
                   <>
-                    <Loader2 className="h-4.5 w-4.5 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                     Signing in...
                   </>
                 ) : (
                   <>
-                    <Icon className="h-4.5 w-4.5" />
+                    <Icon className="h-5 w-5" />
                     Sign in
                   </>
                 )}

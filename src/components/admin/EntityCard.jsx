@@ -45,7 +45,9 @@ function EntityCard({
   return (
     <article
       onClick={onClick}
-      className={`glass-surface group relative flex h-[160px] flex-col justify-between rounded-card p-3.5 shadow-glass transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-white/60 ${
+      /* A minimum rather than a fixed height, so a two-line name does not push
+         the actions out of the card. */
+      className={`glass-surface group relative flex min-h-[160px] flex-col justify-between gap-2 rounded-card p-3.5 shadow-glass transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-white/60 ${
         onClick ? "cursor-pointer" : ""
       }`}
     >
@@ -61,7 +63,7 @@ function EntityCard({
         </span>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate font-display text-[14px] font-bold leading-tight text-content">
+          <p className="line-clamp-2 break-words font-display text-[14px] font-bold leading-tight text-content">
             {title}
           </p>
           {subtitle && (
@@ -82,7 +84,8 @@ function EntityCard({
                   }
                 : undefined
             }
-            className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold transition-colors duration-200 ${
+            /* The toggle is a real control: 32px tall rather than a 23px tag. */
+            className={`flex shrink-0 items-center rounded-full px-3 text-[10.5px] font-bold transition-colors duration-200 ${onToggleStatus ? "h-8" : "py-1"} ${
               onToggleStatus ? "cursor-pointer" : ""
             } ${
               status.active
@@ -132,7 +135,7 @@ function EntityCard({
               aria-label={`Delete ${title}`}
               className={`flex h-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-[11px] font-bold transition-colors duration-200 ${
                 confirming
-                  ? "w-auto bg-danger/15 px-3 text-danger"
+                  ? "w-auto bg-route-red-soft px-3 text-route-red"
                   : "w-8 bg-white/50 text-content-muted hover:text-danger"
               }`}
             >

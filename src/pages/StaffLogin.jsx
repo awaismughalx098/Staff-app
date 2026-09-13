@@ -93,7 +93,7 @@ export default function StaffLogin() {
     } catch (err) {
       const status = err?.response?.status;
       toast.error(
-        err?.response?.data?.message ||
+        err?.friendlyMessage ||
           (status
             ? "Invalid email or password"
             : "Can't reach the server. Check your connection and try again.")

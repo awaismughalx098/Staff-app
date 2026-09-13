@@ -29,16 +29,12 @@ api.interceptors.request.use(
         url.startsWith("/cities") ||
         url.startsWith("/route-suggestions") ||
         url.startsWith("/trips/live") ||
-        url.startsWith("/tours") ||
         url.startsWith("/airlines") ||
-        url.startsWith("/consultants") ||
-        url.startsWith("/bookings/seatmap") ||
-        /* /events is NOT here: without a token the server lists only active,
-           upcoming events, and this console has to manage hidden and past
-           ones too — so every /events read carries the admin token. */
-        (url.startsWith("/hotels") &&
-          !url.includes("/stats") &&
-          !url.includes("/bookings")));
+        url.startsWith("/bookings/seatmap"));
+        /* /events, /tours, /hotels (and their rooms) and /consultants are NOT
+           here: without a token the server lists only what passengers can
+           book, and this console has to manage hidden, departed and
+           off-sale records too — so those reads carry the admin token. */
 
     const isPublicPost =
       url === "/drivers/login" ||

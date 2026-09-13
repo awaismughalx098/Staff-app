@@ -37,7 +37,7 @@ function StatCard({ icon: Icon, value, label, loading, accent }) {
           accent ? "bg-accent text-white" : "bg-accent-soft text-accent"
         }`}
       >
-        <Icon className="h-4.5 w-4.5" />
+        <Icon className="h-5 w-5" />
       </span>
       {loading ? (
         <div className="mt-3 h-6 w-16 animate-pulse rounded bg-white/50" />
@@ -68,7 +68,7 @@ function EventDashboard() {
       setStats(res?.data || null);
     } catch (err) {
       toast.error(
-        err?.response?.data?.message || "Unable to load your event stats"
+        err?.friendlyMessage || "Unable to load your event stats"
       );
     } finally {
       setLoading(false);

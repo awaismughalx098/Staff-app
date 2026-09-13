@@ -47,7 +47,7 @@ function ConsultantAdminConsole() {
       setCurrent(res?.data || null);
       setForm(consultantToForm(res?.data || EMPTY_CONSULTANT));
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load your listing");
+      toast.error(err?.friendlyMessage || "Couldn't load your listing");
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ function ConsultantAdminConsole() {
       setImageFile(null);
       toast.success("Your listing is updated");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't save changes");
+      toast.error(err?.friendlyMessage || "Couldn't save changes");
     } finally {
       setSaving(false);
     }
@@ -153,7 +153,7 @@ function ConsultantAdminConsole() {
                     setCurrent(res.data);
                   } catch (err) {
                     toast.error(
-                      err?.response?.data?.message || "Couldn't change that"
+                      err?.friendlyMessage || "Couldn't change that"
                     );
                   }
                 }}

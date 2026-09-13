@@ -176,7 +176,7 @@ function RentalAdminBookings() {
           : company.name || "Rental Company Admin"
       }
     >
-      <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+      <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
         {FILTERS.map((f) => (
           <button
             key={f.id}

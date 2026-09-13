@@ -152,7 +152,7 @@ function Events() {
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to save event");
+      toast.error(err?.friendlyMessage || "Failed to save event");
     } finally {
       setSaving(false);
     }
@@ -164,7 +164,7 @@ function Events() {
       setEvents((prev) => prev.filter((ev) => ev._id !== event._id));
       toast.success("Event deleted");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to delete event");
+      toast.error(err?.friendlyMessage || "Failed to delete event");
     }
   };
 

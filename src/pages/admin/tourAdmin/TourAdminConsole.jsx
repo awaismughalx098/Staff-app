@@ -58,7 +58,7 @@ function StatCard({ icon: Icon, value, label, loading, accent }) {
           accent ? "bg-accent text-white" : "bg-accent-soft text-accent"
         }`}
       >
-        <Icon className="h-4.5 w-4.5" />
+        <Icon className="h-5 w-5" />
       </span>
       {loading ? (
         <div className="mt-3 h-6 w-20 animate-pulse rounded bg-white/50" />
@@ -128,7 +128,7 @@ function TourAdminConsole({ role }) {
       );
       toast.success(text);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't update that booking");
+      toast.error(err?.friendlyMessage || "Couldn't update that booking");
     } finally {
       setBusyId(null);
     }
@@ -224,7 +224,7 @@ function TourAdminConsole({ role }) {
             />
           </div>
 
-          <div className="mt-4 -mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+          <div className="no-scrollbar mt-4 -mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
             <div className="w-max min-w-full">
               <GlassSegmentedControl
                 options={SCOPES}
@@ -269,14 +269,14 @@ function TourAdminConsole({ role }) {
                       </span>
 
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13.5px] font-bold text-content">
+                        <p className="line-clamp-2 break-words text-[13.5px] font-bold leading-snug text-content">
                           {b.leadName}
                         </p>
-                        <p className="mt-0.5 truncate text-[11.5px] text-content-muted">
+                        <p className="mt-0.5 line-clamp-2 break-words text-[11.5px] text-content-muted">
                           {b.tour?.title || "Package"} · {formatDate(b.departureDate)}
                           {b.departureTime ? ` · ${b.departureTime}` : ""}
                         </p>
-                        <p className="mt-0.5 truncate text-[11.5px] text-content-muted">
+                        <p className="mt-0.5 break-words text-[11.5px] text-content-muted">
                           {b.travellers} traveller{b.travellers === 1 ? "" : "s"} ·{" "}
                           {b.phone}
                         </p>
@@ -317,7 +317,7 @@ function TourAdminConsole({ role }) {
                             onClick={() =>
                               patch(b, { status: "Completed" }, "Marked as travelled")
                             }
-                            className="cursor-pointer rounded-full bg-accent px-3.5 py-1.5 text-[11.5px] font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
+                            className="flex h-9 cursor-pointer items-center rounded-full bg-accent px-4 text-[12px] font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
                           >
                             Mark travelled
                           </button>
@@ -329,26 +329,29 @@ function TourAdminConsole({ role }) {
                             onClick={() =>
                               patch(b, { paymentStatus: "Paid" }, "Marked as paid")
                             }
-                            className="glass-surface cursor-pointer rounded-full px-3.5 py-1.5 text-[11.5px] font-bold text-accent transition-transform active:scale-95 disabled:opacity-50"
+                            className="glass-surface flex h-9 cursor-pointer items-center rounded-full px-4 text-[12px] font-bold text-accent transition-transform active:scale-95 disabled:opacity-50"
                           >
                             Mark paid
                           </button>
                         ) : (
-                          <span className="rounded-full bg-success/15 px-3.5 py-1.5 text-[11.5px] font-bold text-success">
+                          <span className="flex h-9 items-center rounded-full border border-line px-4 text-[12px] font-bold text-success">
                             Paid
                           </span>
                         )}
 
-                        <CancelBookingButton
-                          disabled={busyId === b._id}
-                          onCancel={() =>
-                            patch(
-                              b,
-                              { status: "Cancelled" },
-                              `${b.leadName}'s booking cancelled`
-                            )
-                          }
-                        />
+                        {/* A trip that has already run cannot be cancelled. */}
+                        {b.status === "Confirmed" && (
+                          <CancelBookingButton
+                            disabled={busyId === b._id}
+                            onCancel={() =>
+                              patch(
+                                b,
+                                { status: "Cancelled" },
+                                `${b.leadName}'s booking cancelled`
+                              )
+                            }
+                          />
+                        )}
                       </div>
                     )}
                   </motion.div>

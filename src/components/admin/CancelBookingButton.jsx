@@ -27,10 +27,12 @@ function CancelBookingButton({ onCancel, disabled, label = "Cancel booking" }) {
       type="button"
       onClick={click}
       disabled={disabled}
-      className={`cursor-pointer rounded-full px-3.5 py-1.5 text-[11.5px] font-bold transition-transform active:scale-95 disabled:opacity-50 ${
+      /* 36px tall so it is a real thumb target; the old 31px pill sat right
+         beside other actions. The two-tap confirm stays. */
+      className={`flex h-9 cursor-pointer items-center rounded-full px-4 text-[12px] font-bold transition-transform active:scale-95 disabled:opacity-50 ${
         confirming
           ? "bg-danger text-white"
-          : "glass-surface text-danger hover:bg-danger/10"
+          : "glass-surface text-danger"
       }`}
     >
       {confirming ? "Tap again to confirm" : label}

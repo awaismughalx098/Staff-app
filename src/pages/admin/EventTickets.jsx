@@ -134,7 +134,7 @@ function EventTickets() {
       const res = await getEventBookings(eventId);
       setBookings(Array.isArray(res?.data) ? res.data : []);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Unable to load tickets");
+      toast.error(err?.friendlyMessage || "Unable to load tickets");
     } finally {
       setLoading(false);
     }
@@ -151,7 +151,7 @@ function EventTickets() {
       );
       toast.success(`${booking.attendeeName}'s ticket cancelled`);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't cancel that ticket");
+      toast.error(err?.friendlyMessage || "Couldn't cancel that ticket");
     } finally {
       setBusyId(null);
     }

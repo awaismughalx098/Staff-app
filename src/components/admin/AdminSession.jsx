@@ -64,7 +64,7 @@ export function AdminSessionProvider({ children }) {
       setState({
         status: "anonymous",
         admin: null,
-        error: err?.response?.data?.message || err.message || null,
+        error: err?.friendlyMessage || err.message || null,
       });
     }
   }, []);

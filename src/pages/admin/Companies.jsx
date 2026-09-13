@@ -157,7 +157,7 @@ function CompanyPicker({ onSelectCompany }) {
       toast.success("Company deleted successfully");
       fetchCompanies();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Company delete failed");
+      toast.error(error?.friendlyMessage || "Company delete failed");
     }
   };
 
@@ -192,7 +192,7 @@ function CompanyPicker({ onSelectCompany }) {
       resetForm();
       fetchCompanies();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Company operation failed");
+      toast.error(error?.friendlyMessage || "Company operation failed");
     } finally {
       setSaving(false);
     }

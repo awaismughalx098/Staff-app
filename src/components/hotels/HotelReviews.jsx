@@ -87,7 +87,7 @@ function HotelReviews({ hotelId, reviews, onChanged }) {
       setOpen(false);
       onChanged?.(res.hotel);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't save your review");
+      toast.error(err?.friendlyMessage || "Couldn't save your review");
     } finally {
       setSaving(false);
     }
@@ -101,7 +101,7 @@ function HotelReviews({ hotelId, reviews, onChanged }) {
       setComment("");
       onChanged?.();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't remove review");
+      toast.error(err?.friendlyMessage || "Couldn't remove review");
     }
   };
 

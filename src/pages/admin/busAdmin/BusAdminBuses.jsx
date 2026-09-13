@@ -48,7 +48,7 @@ function BusAdminBuses() {
       const res = await getCompanyRevenue(company.id);
       setBuses(res?.data?.buses || []);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load your buses");
+      toast.error(err?.friendlyMessage || "Couldn't load your buses");
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ function BusAdminBuses() {
       const res = await getBusRevenue(row._id);
       setBus(res?.data || null);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load that bus");
+      toast.error(err?.friendlyMessage || "Couldn't load that bus");
     } finally {
       setLoading(false);
     }
@@ -180,7 +180,7 @@ function BusAdminBuses() {
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
                 <div className="glass-surface rounded-card p-4 shadow-glass">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white">
-                    <Wallet className="h-4.5 w-4.5" />
+                    <Wallet className="h-5 w-5" />
                   </span>
                   <p className="mt-3 font-display text-xl font-black leading-none text-content">
                     {formatPrice(bus.revenue)}
@@ -191,7 +191,7 @@ function BusAdminBuses() {
                 </div>
                 <div className="glass-surface rounded-card p-4 shadow-glass">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-accent">
-                    <Ticket className="h-4.5 w-4.5" />
+                    <Ticket className="h-5 w-5" />
                   </span>
                   <p className="mt-3 font-display text-xl font-black leading-none text-content">
                     {bus.tickets}
@@ -202,7 +202,7 @@ function BusAdminBuses() {
                 </div>
                 <div className="glass-surface rounded-card p-4 shadow-glass">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft text-accent">
-                    <Ticket className="h-4.5 w-4.5" />
+                    <Ticket className="h-5 w-5" />
                   </span>
                   <p className="mt-3 font-display text-xl font-black leading-none text-content">
                     {bus.cancelled}

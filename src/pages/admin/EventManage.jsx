@@ -101,7 +101,7 @@ function EventManage() {
       setImageFile(null);
       toast.success("Your event card is updated");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to save changes");
+      toast.error(err?.friendlyMessage || "Failed to save changes");
     } finally {
       setSaving(false);
     }

@@ -166,7 +166,7 @@ function Hotels() {
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to save hotel");
+      toast.error(err?.friendlyMessage || "Failed to save hotel");
     } finally {
       setSaving(false);
     }
@@ -178,7 +178,7 @@ function Hotels() {
       setHotels((prev) => prev.filter((h) => h._id !== hotel._id));
       toast.success("Hotel deleted");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to delete hotel");
+      toast.error(err?.friendlyMessage || "Failed to delete hotel");
     }
   };
 

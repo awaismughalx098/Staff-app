@@ -133,7 +133,7 @@ function News() {
       resetForm();
       fetchNews();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Operation failed");
+      toast.error(error?.friendlyMessage || "Operation failed");
     } finally {
       setSaving(false);
     }

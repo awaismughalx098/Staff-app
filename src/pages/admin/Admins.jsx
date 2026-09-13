@@ -262,7 +262,7 @@ function Admins() {
       toast.success(`${label} deleted`);
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || `${label} delete failed`);
+      toast.error(error?.friendlyMessage || `${label} delete failed`);
     }
   };
 
@@ -347,7 +347,7 @@ function Admins() {
         load();
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Operation failed");
+      toast.error(error?.friendlyMessage || "Operation failed");
     } finally {
       setSaving(false);
     }

@@ -132,7 +132,7 @@ function HotelAdminManage() {
       setVideoFiles([]);
       toast.success("Your hotel is updated");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't save changes");
+      toast.error(err?.friendlyMessage || "Couldn't save changes");
     } finally {
       setSaving(false);
     }
@@ -200,8 +200,10 @@ function HotelAdminManage() {
             </label>
 
             <div className="grid grid-cols-2 gap-3">
+              {/* Guests pay a room's price. This rate is only used for a hotel
+                  with no rooms set up, so it is labelled as that. */}
               <label className="block">
-                <span className={labelClass}>Price per night</span>
+                <span className={labelClass}>Base rate (no rooms)</span>
                 <input
                   type="number"
                   min="0"

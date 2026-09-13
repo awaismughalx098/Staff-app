@@ -125,7 +125,7 @@ function HotelBookingSheet({ hotel, open, onClose, onBooked }) {
       toast.success(res.message || "Your stay is booked");
       onBooked?.(res.data);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't book this stay");
+      toast.error(err?.friendlyMessage || "Couldn't book this stay");
     } finally {
       setSaving(false);
     }
@@ -225,7 +225,7 @@ function HotelBookingSheet({ hotel, open, onClose, onBooked }) {
             </span>
           ) : (
             <>
-              <BedDouble className="h-4.5 w-4.5" />
+              <BedDouble className="h-5 w-5" />
               Confirm Booking
             </>
           )}

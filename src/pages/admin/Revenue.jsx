@@ -60,7 +60,7 @@ function StatCard({ icon: Icon, value, label, accent }) {
           accent ? "bg-accent text-white" : "bg-accent-soft text-accent"
         }`}
       >
-        <Icon className="h-4.5 w-4.5" />
+        <Icon className="h-5 w-5" />
       </span>
       <p className="mt-3 font-display text-xl font-black leading-none text-content">
         {value}
@@ -134,7 +134,7 @@ function Revenue() {
       const res = await fn();
       onData(res?.data);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load revenue");
+      toast.error(err?.friendlyMessage || "Couldn't load revenue");
     } finally {
       setLoading(false);
     }

@@ -95,7 +95,7 @@ function Consultants() {
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't save that consultant");
+      toast.error(err?.friendlyMessage || "Couldn't save that consultant");
     } finally {
       setSaving(false);
     }
@@ -107,7 +107,7 @@ function Consultants() {
       setConsultants((prev) => prev.filter((c) => c._id !== consultant._id));
       toast.success("Consultant deleted");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't delete that consultant");
+      toast.error(err?.friendlyMessage || "Couldn't delete that consultant");
     }
   };
 
@@ -121,7 +121,7 @@ function Consultants() {
         prev.map((c) => (c._id === consultant._id ? res.data : c))
       );
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't change that");
+      toast.error(err?.friendlyMessage || "Couldn't change that");
     }
   };
 

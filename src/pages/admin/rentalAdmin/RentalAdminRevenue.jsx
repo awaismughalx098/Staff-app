@@ -47,7 +47,7 @@ function Figure({ icon: Icon, value, label, hint, accent }) {
           accent ? "bg-accent text-white" : "bg-accent-soft text-accent"
         }`}
       >
-        <Icon className="h-4.5 w-4.5" />
+        <Icon className="h-5 w-5" />
       </span>
       <p className="mt-3 font-display text-xl font-black leading-none text-content">
         {value}

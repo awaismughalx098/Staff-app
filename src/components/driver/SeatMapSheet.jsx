@@ -44,7 +44,7 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
       setMap(res?.data || null);
       setForm((f) => ({ ...f, toCity: f.toCity || res?.data?.destinations?.slice(-1)[0] || "" }));
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load the seat map");
+      toast.error(err?.friendlyMessage || "Couldn't load the seat map");
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ function SeatMapSheet({ tripId, open, onClose, onChanged }) {
       await load();
       onChanged?.();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't seat that passenger");
+      toast.error(err?.friendlyMessage || "Couldn't seat that passenger");
     } finally {
       setSaving(false);
     }

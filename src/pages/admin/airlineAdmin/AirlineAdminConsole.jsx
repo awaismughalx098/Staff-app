@@ -52,7 +52,7 @@ function AirlineAdminConsole() {
         isActive: data.isActive !== false,
       });
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load your airline");
+      toast.error(err?.friendlyMessage || "Couldn't load your airline");
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ function AirlineAdminConsole() {
       setImageFile(null);
       toast.success("Your airline is updated");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't save changes");
+      toast.error(err?.friendlyMessage || "Couldn't save changes");
     } finally {
       setSaving(false);
     }

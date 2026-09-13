@@ -60,7 +60,7 @@ function BusAdminDrivers() {
       const res = await getDrivers();
       setDrivers(Array.isArray(res?.data) ? res.data : []);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load drivers");
+      toast.error(err?.friendlyMessage || "Couldn't load drivers");
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ function BusAdminDrivers() {
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't save that driver");
+      toast.error(err?.friendlyMessage || "Couldn't save that driver");
     } finally {
       setSaving(false);
     }
@@ -142,7 +142,7 @@ function BusAdminDrivers() {
       setDrivers((prev) => prev.filter((d) => d._id !== driver._id));
       toast.success("Driver removed");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't remove that driver");
+      toast.error(err?.friendlyMessage || "Couldn't remove that driver");
     }
   };
 
@@ -155,7 +155,7 @@ function BusAdminDrivers() {
         prev.map((d) => (d._id === driver._id ? { ...d, ...res.data } : d))
       );
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't change that");
+      toast.error(err?.friendlyMessage || "Couldn't change that");
     }
   };
 

@@ -46,8 +46,10 @@ const formatDate = (date) =>
 
 /* What the desk can do next, given where a guest is in their stay. */
 const NEXT_STATUS = {
-  Confirmed: { to: "CheckedIn", label: "Check in" },
-  CheckedIn: { to: "CheckedOut", label: "Check out" },
+  /* `done` is spelled out: the toast used to add "ed" to the label, which
+     told the desk a guest had been "check ined". */
+  Confirmed: { to: "CheckedIn", label: "Check in", done: "checked in" },
+  CheckedIn: { to: "CheckedOut", label: "Check out", done: "checked out" },
 };
 
 function HotelAdminBookings() {
@@ -69,7 +71,7 @@ function HotelAdminBookings() {
       const res = await getHotelBookings(hotel.id);
       setBookings(Array.isArray(res?.data) ? res.data : []);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load bookings");
+      toast.error(err?.friendlyMessage || "Couldn't load bookings");
     } finally {
       setLoading(false);
     }
@@ -89,7 +91,7 @@ function HotelAdminBookings() {
       );
       toast.success(successText);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't update that booking");
+      toast.error(err?.friendlyMessage || "Couldn't update that booking");
     } finally {
       setBusyId(null);
     }
@@ -150,7 +152,7 @@ function HotelAdminBookings() {
             />
           </div>
 
-          <div className="mt-4 -mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+          <div className="no-scrollbar mt-4 -mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
             <div className="w-max min-w-full">
               <GlassSegmentedControl
                 options={SCOPES}
@@ -205,7 +207,7 @@ function HotelAdminBookings() {
                       </span>
 
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13.5px] font-bold text-content">
+                        <p className="line-clamp-2 break-words text-[13.5px] font-bold leading-snug text-content">
                           {b.guestName}
                         </p>
                         <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11.5px] text-content-muted">
@@ -258,9 +260,9 @@ function HotelAdminBookings() {
                             type="button"
                             disabled={busyId === b._id}
                             onClick={() =>
-                              patch(b, { status: next.to }, `${b.guestName} ${next.label.toLowerCase()}ed`)
+                              patch(b, { status: next.to }, `${b.guestName} ${next.done}`)
                             }
-                            className="cursor-pointer rounded-full bg-accent px-3.5 py-1.5 text-[11.5px] font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
+                            className="flex h-9 cursor-pointer items-center rounded-full bg-accent px-4 text-[12px] font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
                           >
                             {next.label}
                           </button>
@@ -272,16 +274,20 @@ function HotelAdminBookings() {
                             onClick={() =>
                               patch(b, { paymentStatus: "Paid" }, "Marked as paid")
                             }
-                            className="glass-surface cursor-pointer rounded-full px-3.5 py-1.5 text-[11.5px] font-bold text-accent transition-transform active:scale-95 disabled:opacity-50"
+                            className="glass-surface flex h-9 cursor-pointer items-center rounded-full px-4 text-[12px] font-bold text-accent transition-transform active:scale-95 disabled:opacity-50"
                           >
                             Mark paid
                           </button>
                         ) : (
-                          <span className="rounded-full bg-success/15 px-3.5 py-1.5 text-[11.5px] font-bold text-success">
+                          <span className="flex h-9 items-center rounded-full border border-line px-4 text-[12px] font-bold text-success">
                             Paid
                           </span>
                         )}
 
+                        {/* Only a stay that has not started can be cancelled —
+                            the server refuses the rest, so the button is not
+                            offered for them. */}
+                        {b.status === "Confirmed" && (
                         <CancelBookingButton
                           disabled={busyId === b._id}
                           onCancel={() =>
@@ -292,6 +298,7 @@ function HotelAdminBookings() {
                             )
                           }
                         />
+                        )}
                       </div>
                     )}
                   </motion.div>

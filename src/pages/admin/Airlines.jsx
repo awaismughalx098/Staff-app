@@ -103,7 +103,7 @@ function Airlines() {
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to save airline");
+      toast.error(err?.friendlyMessage || "Failed to save airline");
     } finally {
       setSaving(false);
     }
@@ -115,7 +115,7 @@ function Airlines() {
       setAirlines((prev) => prev.filter((a) => a._id !== airline._id));
       toast.success("Airline deleted");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to delete airline");
+      toast.error(err?.friendlyMessage || "Failed to delete airline");
     }
   };
 

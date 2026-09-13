@@ -65,7 +65,7 @@ function ScanTicket() {
       const res = await verifyTicket(bookingId);
       setTicket(res?.data || null);
     } catch (err) {
-      setTicketError(err?.response?.data?.message || "Couldn't load this ticket");
+      setTicketError(err?.friendlyMessage || "Couldn't load this ticket");
     } finally {
       setLoadingTicket(false);
     }

@@ -111,7 +111,7 @@ function Drivers() {
       toast.success("Driver deleted successfully");
       fetchDrivers();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Driver delete failed");
+      toast.error(error?.friendlyMessage || "Driver delete failed");
     }
   };
 
@@ -149,7 +149,7 @@ function Drivers() {
       resetForm();
       fetchDrivers();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Driver operation failed");
+      toast.error(error?.friendlyMessage || "Driver operation failed");
     } finally {
       setSaving(false);
     }

@@ -45,7 +45,15 @@ const EMPTY = {
   departureDate: "",
   departureTime: "",
   groupType: "Both",
+  /* Empty means no limit, which is how packages worked before seats. */
+  totalSeats: "",
 };
+
+/* "3 of 20 seats left", or nothing when the package has no limit. */
+const seatsLine = (tour) =>
+  Number.isFinite(tour?.seatsLeft) && tour.totalSeats
+    ? `${tour.seatsLeft} of ${tour.totalSeats} seats left`
+    : "";
 
 const getImageUrl = (img, width) => getUploadUrl(img, width);
 
@@ -94,7 +102,7 @@ function TourAdminPackages({ role }) {
       const res = await getTours({ company: company.id });
       setTours(Array.isArray(res?.data) ? res.data : []);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load your packages");
+      toast.error(err?.friendlyMessage || "Couldn't load your packages");
     } finally {
       setLoading(false);
     }
@@ -123,6 +131,7 @@ function TourAdminPackages({ role }) {
       departureDate: toDateInput(tour.departureDate),
       departureTime: tour.departureTime || "",
       groupType: tour.groupType || "Both",
+      totalSeats: tour.totalSeats ?? "",
     });
     setImageFile(null);
     setModalOpen(true);
@@ -142,8 +151,9 @@ function TourAdminPackages({ role }) {
 
     setSaving(true);
     try {
+      /* No type is sent: the server takes it from the company. */
       const data = new FormData();
-      Object.entries({ ...form, type }).forEach(([k, v]) => data.append(k, v));
+      Object.entries(form).forEach(([k, v]) => data.append(k, v));
       if (imageFile) data.append("image", imageFile);
 
       if (editing) {
@@ -159,7 +169,7 @@ function TourAdminPackages({ role }) {
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't save that package");
+      toast.error(err?.friendlyMessage || "Couldn't save that package");
     } finally {
       setSaving(false);
     }
@@ -167,11 +177,17 @@ function TourAdminPackages({ role }) {
 
   const remove = async (tour) => {
     try {
-      await deleteTour(tour._id);
-      setTours((prev) => prev.filter((t) => t._id !== tour._id));
-      toast.success("Package deleted");
+      const res = await deleteTour(tour._id);
+      /* A package with bookings is hidden by the server rather than deleted,
+         so it stays in the list — marked Hidden — instead of vanishing. */
+      if (res?.data?._id) {
+        setTours((prev) => prev.map((t) => (t._id === tour._id ? { ...t, ...res.data, company: t.company } : t)));
+      } else {
+        setTours((prev) => prev.filter((t) => t._id !== tour._id));
+      }
+      toast.success(res?.message || "Package deleted");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't delete that package");
+      toast.error(err?.friendlyMessage || "Couldn't delete that package");
     }
   };
 
@@ -183,7 +199,7 @@ function TourAdminPackages({ role }) {
       const res = await updateTour(tour._id, data);
       setTours((prev) => prev.map((t) => (t._id === tour._id ? res.data : t)));
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't change that");
+      toast.error(err?.friendlyMessage || "Couldn't change that");
     }
   };
 
@@ -266,10 +282,12 @@ function TourAdminPackages({ role }) {
                     icon={Package}
                     title={tour.title}
                     subtitle={`${formatPrice(tour.price)} · ${tour.durationDays}d`}
-                    meta={
-                      formatDeparture(tour.departureDate, tour.departureTime) ||
-                      "No departure set"
-                    }
+                    meta={[
+                      formatDeparture(tour.departureDate, tour.departureTime) || "No departure set",
+                      seatsLine(tour),
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
                     status={{
                       label: tour.isActive !== false ? "Active" : "Hidden",
                       active: tour.isActive !== false,
@@ -302,7 +320,9 @@ function TourAdminPackages({ role }) {
             />
           </label>
 
-          <div className="grid grid-cols-3 gap-3">
+          {/* Two columns on a phone, three from small tablets up: three
+              inputs across a 320px sheet left each about 80px wide. */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <label className="block">
               <span className={labelClass}>Price *</span>
               <input
@@ -326,7 +346,7 @@ function TourAdminPackages({ role }) {
                 className={inputClass}
               />
             </label>
-            <label className="block">
+            <label className="col-span-2 block sm:col-span-1">
               <span className={labelClass}>Departs from</span>
               <input
                 value={form.departureCity}
@@ -364,6 +384,24 @@ function TourAdminPackages({ role }) {
               />
             </label>
           </div>
+
+          <label className="block">
+            <span className={labelClass}>Seats on this departure</span>
+            <input
+              type="number"
+              min="1"
+              inputMode="numeric"
+              value={form.totalSeats}
+              onChange={(e) => setForm((f) => ({ ...f, totalSeats: e.target.value }))}
+              placeholder="Leave empty for no limit"
+              className={inputClass}
+            />
+            {editing && Number.isFinite(editing.seatsBooked) && editing.seatsBooked > 0 && (
+              <span className="mt-1 block text-[11.5px] text-content-muted">
+                {editing.seatsBooked} already booked
+              </span>
+            )}
+          </label>
 
           {/* Only northern trips are filtered by travel style on the app. */}
           {type === "Northern" && (

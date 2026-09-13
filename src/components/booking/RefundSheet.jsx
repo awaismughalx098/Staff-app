@@ -34,7 +34,7 @@ function RefundSheet({ kind, bookingId, open, onClose, onRefunded }) {
       .catch((err) => {
         if (!cancelled) {
           toast.error(
-            err?.response?.data?.message || "Couldn't work out your refund"
+            err?.friendlyMessage || "Couldn't work out your refund"
           );
           onClose();
         }
@@ -57,7 +57,7 @@ function RefundSheet({ kind, bookingId, open, onClose, onRefunded }) {
       onRefunded?.(res.data);
       onClose();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't process your refund");
+      toast.error(err?.friendlyMessage || "Couldn't process your refund");
     } finally {
       setSaving(false);
     }
@@ -155,7 +155,7 @@ function RefundSheet({ kind, bookingId, open, onClose, onRefunded }) {
               </span>
             ) : (
               <>
-                <Undo2 className="h-4.5 w-4.5" />
+                <Undo2 className="h-5 w-5" />
                 Cancel and refund {formatPrice(quote.refund)}
               </>
             )}

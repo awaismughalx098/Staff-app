@@ -33,7 +33,7 @@ function StatCard({ icon: Icon, value, label, loading, accent }) {
           accent ? "bg-accent text-white" : "bg-accent-soft text-accent"
         }`}
       >
-        <Icon className="h-4.5 w-4.5" />
+        <Icon className="h-5 w-5" />
       </span>
       {loading ? (
         <div className="mt-3 h-6 w-20 animate-pulse rounded bg-white/50" />
@@ -92,7 +92,7 @@ function BusAdminDashboard() {
       setStats(rev.value?.data || null);
     } else {
       toast.error(
-        rev.reason?.response?.data?.message || "Couldn't load your figures"
+        rev.reason?.friendlyMessage || "Couldn't load your figures"
       );
     }
 

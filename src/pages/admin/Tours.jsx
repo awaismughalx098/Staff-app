@@ -20,10 +20,14 @@ import { getUploadUrl } from "../../config";
 
 const getImageUrl = (img, width) => getUploadUrl(img, width);
 
+/* A package's type follows its company, and the server sets it from there —
+   so this page shows it rather than offering a choice that would be ignored. */
+const TYPE_FOR_KIND = { tour: "Northern", religious: "Religious" };
+
 const EMPTY_FORM = {
   company: "",
-  type: "Religious",
   groupType: "Both",
+  totalSeats: "",
   title: "",
   description: "",
   price: "",
@@ -104,8 +108,8 @@ function Tours() {
     setEditing(tour);
     setForm({
       company: tour.company?._id || "",
-      type: tour.type,
       groupType: tour.groupType || "Both",
+      totalSeats: tour.totalSeats ?? "",
       title: tour.title,
       description: tour.description,
       price: tour.price,
@@ -146,7 +150,7 @@ function Tours() {
       }
       setModalOpen(false);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to save tour");
+      toast.error(err?.friendlyMessage || "Failed to save tour");
     } finally {
       setSaving(false);
     }
@@ -154,11 +158,16 @@ function Tours() {
 
   const performDelete = async (tour) => {
     try {
-      await deleteTour(tour._id);
-      setTours((prev) => prev.filter((t) => t._id !== tour._id));
-      toast.success("Tour deleted");
+      const res = await deleteTour(tour._id);
+      /* Hidden rather than deleted when it has bookings — keep it listed. */
+      if (res?.data?._id) {
+        setTours((prev) => prev.map((t) => (t._id === tour._id ? { ...t, ...res.data, company: t.company } : t)));
+      } else {
+        setTours((prev) => prev.filter((t) => t._id !== tour._id));
+      }
+      toast.success(res?.message || "Tour deleted");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to delete tour");
+      toast.error(err?.friendlyMessage || "Failed to delete tour");
     }
   };
 
@@ -229,10 +238,15 @@ function Tours() {
                 icon={Globe}
                 title={tour.title}
                 subtitle={tour.type}
-                meta={`${tour.company?.name || "—"} · ${formatPrice(tour.price)} · ${tour.durationDays}d · ${
-                  formatDeparture(tour.departureDate, tour.departureTime) ||
-                  "No departure set"
-                }`}
+                meta={[
+                  tour.company?.name || "—",
+                  formatPrice(tour.price),
+                  `${tour.durationDays}d`,
+                  formatDeparture(tour.departureDate, tour.departureTime) || "No departure set",
+                  tour.totalSeats ? `${tour.seatsLeft ?? 0}/${tour.totalSeats} seats` : "",
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
                 status={{
                   label: tour.isActive !== false ? "Active" : "Hidden",
                   active: tour.isActive !== false,
@@ -270,24 +284,21 @@ function Tours() {
                 </label>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <label className="block">
-                    <span className={labelClass}>Type *</span>
-                    <select
-                      value={form.type}
-                      onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-                      className={inputClass}
-                    >
-                      <option value="Religious">Religious</option>
-                      <option value="Northern">Northern</option>
-                    </select>
-                  </label>
+                  <div className="block">
+                    <span className={labelClass}>Type</span>
+                    <p className={`${inputClass} flex items-center text-content-muted`}>
+                      {TYPE_FOR_KIND[companies.find((c) => c._id === form.company)?.kind] ||
+                        editing?.type ||
+                        "Set by company"}
+                    </p>
+                  </div>
                   <label className="block">
                     <span className={labelClass}>Travel style</span>
                     <select
                       value={form.groupType}
                       onChange={(e) => setForm((f) => ({ ...f, groupType: e.target.value }))}
                       className={inputClass}
-                      disabled={form.type === "Religious"}
+                      disabled={companies.find((c) => c._id === form.company)?.kind === "religious"}
                     >
                       <option value="Both">Both</option>
                       <option value="Solo">Solo</option>
@@ -307,7 +318,7 @@ function Tours() {
                   />
                 </label>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <label className="block">
                     <span className={labelClass}>Price (Rs) *</span>
                     <input
@@ -326,6 +337,18 @@ function Tours() {
                       min="1"
                       value={form.durationDays}
                       onChange={(e) => setForm((f) => ({ ...f, durationDays: e.target.value }))}
+                      className={inputClass}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className={labelClass}>Seats</span>
+                    <input
+                      type="number"
+                      min="1"
+                      inputMode="numeric"
+                      value={form.totalSeats}
+                      onChange={(e) => setForm((f) => ({ ...f, totalSeats: e.target.value }))}
+                      placeholder="No limit"
                       className={inputClass}
                     />
                   </label>

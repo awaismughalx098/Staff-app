@@ -50,7 +50,7 @@ function BusAdminBookings() {
       const res = await getCompanyBookings(scope);
       setBookings(Array.isArray(res?.data) ? res.data : []);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't load bookings");
+      toast.error(err?.friendlyMessage || "Couldn't load bookings");
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ function BusAdminBookings() {
       );
       toast.success(`${booking.passengerName}'s seat cancelled`);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't cancel that seat");
+      toast.error(err?.friendlyMessage || "Couldn't cancel that seat");
     } finally {
       setBusyId(null);
     }
