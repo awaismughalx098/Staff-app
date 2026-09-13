@@ -33,11 +33,9 @@ api.interceptors.request.use(
         url.startsWith("/airlines") ||
         url.startsWith("/consultants") ||
         url.startsWith("/bookings/seatmap") ||
-        /* Browsing events is public; /stats and /bookings under the same
-           prefix are admin reads and must keep the admin token. */
-        (url.startsWith("/events") &&
-          !url.includes("/stats") &&
-          !url.includes("/bookings")) ||
+        /* /events is NOT here: without a token the server lists only active,
+           upcoming events, and this console has to manage hidden and past
+           ones too — so every /events read carries the admin token. */
         (url.startsWith("/hotels") &&
           !url.includes("/stats") &&
           !url.includes("/bookings")));
