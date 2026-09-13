@@ -125,8 +125,9 @@ function News() {
         await updateNews(editingId, data);
         toast.success("News updated");
       } else {
-        await createNews(data);
-        toast.success("News created");
+        const res = await createNews(data);
+        /* The server says whether passengers are being notified. */
+        toast.success(res?.message || "News published");
       }
 
       setModalOpen(false);

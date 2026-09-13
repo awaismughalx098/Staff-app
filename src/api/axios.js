@@ -25,7 +25,6 @@ api.interceptors.request.use(
       method === "get" &&
       (url.startsWith("/companies") ||
         url.startsWith("/buses") ||
-        url.startsWith("/news") ||
         url.startsWith("/cities") ||
         url.startsWith("/route-suggestions") ||
         url.startsWith("/trips/live") ||

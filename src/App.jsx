@@ -31,6 +31,7 @@ const AdminRevenue = lazy(() => import("./pages/admin/Revenue"));
 const AdminBookings = lazy(() => import("./pages/admin/Bookings"));
 const AdminRefunds = lazy(() => import("./pages/admin/Refunds"));
 const AdminSupport = lazy(() => import("./pages/admin/Support"));
+const AdminLostFound = lazy(() => import("./pages/admin/LostFound"));
 const SystemHealth = lazy(() => import("./pages/admin/SystemHealth"));
 
 /* ===== EVENT ADMIN ===== */
@@ -135,6 +136,7 @@ function App() {
             <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
             <Route path="/admin/refunds" element={<ProtectedRoute role="admin"><AdminRefunds /></ProtectedRoute>} />
             <Route path="/admin/support" element={<ProtectedRoute role="admin"><AdminSupport /></ProtectedRoute>} />
+            <Route path="/admin/lost-found" element={<ProtectedRoute role="admin"><AdminLostFound /></ProtectedRoute>} />
             <Route path="/admin/promotions" element={<ProtectedRoute role="admin"><AdminPromotions /></ProtectedRoute>} />
             <Route path="/admin/system-health" element={<ProtectedRoute role="admin"><SystemHealth /></ProtectedRoute>} />
 
